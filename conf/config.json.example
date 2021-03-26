@@ -12,6 +12,9 @@
       "kleinanzeigen": {
         "url": "https://www.ebay-kleinanzeigen.de/s-wohnung-mieten/berlin/anzeige:angebote/preis::9999/wohnung/k0c203l3331+wohnung_mieten.qm_i:99,"
       },
+      "ivd24": {
+        "url": "https://www.ivd24immobilien.de/search-photon/?osm_id=20833623&osm_key=place&osm_value=city&osm_postcode=20095&osm_lat=53.550341&osm_long=10.000654&nutzungsart_id=&vermarktungsart_id=10000000010&605e109bade63=Hamburg&search_term=Hamburg"
+      }, 
       "wggesucht": {
         "city": "Berlin",
         "cityKey": 8,
