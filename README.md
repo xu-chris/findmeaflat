@@ -16,7 +16,32 @@ You can run the application as a Docker container with the following command:
 docker run -it --rm --name findmeaflat --init \
            -v $(pwd)/config.json:/app/conf/config.json \
            -v findmeaflat_db:/app/db \
-           docker.pkg.github.com/adriankumpf/findmeaflat/findmeaflat:latest
+           creichel/findmeaflat:latest
+```
+
+Alternatively, you could also use the docker package from this repo:
+```
+docker.pkg.github.com/creichel/findmeaflat/findmeaflat:latest
+```
+
+### Docker Compose
+
+Of course, you can as well create a container with docker compose. You need to set the `user` values to the `User ID` and `Group ID` so the container can acutally write into the database file if you want to have and use it locally.
+
+Example:
+```yaml
+version: "2"
+
+services:
+  findmeaflat:
+    image: creichel/findmeaflat:latest
+    container_name: findmeaflat
+    volumes:
+      - <your-path>/conf/config.json:/app/conf/config.json
+      - <your-path>/db/:/app/db/
+    restart: unless-stopped
+    network_mode: host
+    user: '100:100'
 ```
 
 ### Manual
@@ -61,6 +86,7 @@ Create a configuration file `config.json` with the following contents:
   },
   "wantedDistricts": ["Wedding", "Friedrichshain"],
   "blacklist": ["swap", "tausch", "wg"],
+  "maxDistanceInKilometres": "10",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
 }
 ```
@@ -149,3 +175,12 @@ Since `ebay Kleinanzeigen` and `WgGesucht` offer a very limited filtering of dis
 ```
 
 Listings which contain at least on of the given terms (ignoring case, only whole words) are removed.
+
+
+#### Max radius distance
+
+```json
+"maxDistanceInKilometres": "10",
+```
+
+Use this especially for Immonet results if you're annoyed about irrelevant results which are 50 kilometres away from your intended search radius.
