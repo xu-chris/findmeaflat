@@ -3,7 +3,7 @@ all: build start
 
 .PHONY: build
 build: ## Build the docker image
-	@docker image build -t adriankumpf/findmeaflat .
+	@docker image build -t creichel/findmeaflat .
 
 .PHONY: start
 start: ## Start the docker container
@@ -13,7 +13,7 @@ start: ## Start the docker container
 		--rm \
 		-v $$(pwd)/conf/config.json:/app/conf/config.json \
 		-v findmeaflat:/app/db \
-		adriankumpf/findmeaflat
+		creichel/findmeaflat
 
 .PHONY: dev
 dev: ## Start the docker container for development
@@ -26,5 +26,5 @@ dev: ## Start the docker container for development
 		-v $$(pwd)/db:/app/db \
 		-v $$(pwd)/index.js:/app/index.js \
 		-v $$(pwd)/lib:/app/lib \
-		adriankumpf/findmeaflat
+		creichel/findmeaflat
 
