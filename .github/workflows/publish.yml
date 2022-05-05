@@ -1,14 +1,18 @@
 name: Publish Docker image
+
 on:
   push:
     branches: ['master','main']
+
 jobs:
-  push_to_docker_hub:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
+
+  create_metadata:
+    name: Create Metadata
+    outputs:
+      tag: ${{ steps.tag_version.outputs.new_tag }}
+      name: ${{ steps.tag_version.outputs.new_tag }}
+      body: ${{ steps.tag_version.outputs.changelog }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Create new tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.0
@@ -16,6 +20,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: v
           release_branches: master
+
+  push_to_docker_hub:
+    name: Push Docker image to Docker Hub
+    needs: create_metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -38,7 +50,7 @@ jobs:
           context: .
           pull: true
           push: true
-          tags: ${{ steps.tag_version.outputs.new_tag }}
+          tags: ${{ needs.create_metadata.outputs.tag }}
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.html_url }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -52,19 +64,14 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
   push_to_github:
     name: Push Docker image to GitHub Packages
+    needs: create_metadata
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Create new tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: v
-          release_branches: master
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -88,7 +95,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.tag_version.outputs.new_tag }}
+          tags: ${{ needs.create_metadata.outputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       -
@@ -99,9 +106,16 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  create_release:
+    name: Create Release
+    needs: 
+      - create_metadata
+      - push_to_github
+    steps:
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+          tag: ${{ needs.create_metadata.outputs.tag }}
+          name: Release ${{ needs.create_metadata.outputs.name }}
+          body: ${{ needs.create_metadata.outputs.body }}
