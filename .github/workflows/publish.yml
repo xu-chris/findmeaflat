@@ -29,15 +29,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tag-edge: true
-          tag-semver: |
-            {{version}}
-            {{major}}.{{minor}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -60,7 +51,7 @@ jobs:
           context: .
           pull: true
           push: true
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/findmeaflat/findmeaflat:${{ needs.create_metadata.outputs.tag }}
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.html_url }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -82,15 +73,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tag-edge: true
-          tag-semver: |
-            {{version}}
-            {{major}}.{{minor}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -114,7 +96,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          tags: ghcr.io/${{ github.repository }}/findmeaflat:${{ needs.create_metadata.outputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       -
