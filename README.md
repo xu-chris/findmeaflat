@@ -21,7 +21,7 @@ docker run -it --rm --name findmeaflat --init \
 
 Alternatively, you could also use the docker package from this repo:
 ```
-docker.pkg.github.com/creichel/findmeaflat/findmeaflat:latest
+docker.pkg.github.com/xu-chris/findmeaflat/findmeaflat:latest
 ```
 
 ### Docker Compose
