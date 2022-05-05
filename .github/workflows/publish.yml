@@ -49,13 +49,23 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          pull: true
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_USERNAME }}/findmeaflat/findmeaflat:${{ needs.create_metadata.outputs.tag }}
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.html_url }}
             org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      - name: Build and push to latest
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/findmeaflat/findmeaflat:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache-new
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       -
         # Temp fix
@@ -98,6 +108,14 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ghcr.io/${{ github.repository }}/findmeaflat:${{ needs.create_metadata.outputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      - name: Build and push latest
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository }}/findmeaflat:latest
+          cache-from: type=local,src=/tmp/.buildx-cache-new
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
       -
         # Temp fix
