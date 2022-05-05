@@ -8,6 +8,7 @@ jobs:
 
   create_metadata:
     name: Create Metadata
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
       name: ${{ steps.tag_version.outputs.new_tag }}
@@ -109,6 +110,7 @@ jobs:
 
   create_release:
     name: Create Release
+    runs-on: ubuntu-latest
     needs: 
       - create_metadata
       - push_to_github
