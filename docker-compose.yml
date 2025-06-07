@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  findmeaflat:
+    build: .
+    container_name: findmeaflat
+    volumes:
+      - ./conf/config.json:/app/conf/config.json
+      - ./db/:/app/db/
+    restart: unless-stopped
+    network_mode: host
+    # user: '100:100'

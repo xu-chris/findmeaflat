@@ -16,7 +16,7 @@ You can run the application as a Docker container with the following command:
 docker run -it --rm --name findmeaflat --init \
            -v $(pwd)/config.json:/app/conf/config.json \
            -v findmeaflat_db:/app/db \
-           creichel/findmeaflat:latest
+           ghcr.io/xu-chris/findmeaflat/findmeaflat:latest
 ```
 
 Alternatively, you could also use the docker package from this repo:
@@ -30,11 +30,9 @@ Of course, you can as well create a container with docker compose. You need to s
 
 Example:
 ```yaml
-version: "2"
-
 services:
   findmeaflat:
-    image: creichel/findmeaflat:latest
+    image: ghcr.io/xu-chris/findmeaflat/findmeaflat:latest
     container_name: findmeaflat
     volumes:
       - <your-path>/conf/config.json:/app/conf/config.json
@@ -135,7 +133,7 @@ Configure the providers like described below. To disable a provider just remove 
 
 Go to the respective provider page and create your custom search queries by using the provided filter options. Then just copy and paste the whole URL of the resulting listings page.
 
-**IMPORTANT:** Make sure to always sort by newest listings!
+**IMPORTANT:** Make sure to always sort by newest listings and in the LIST mode (immobilienscout24 likes maps nowadays).
 
 #### WgGesucht
 
