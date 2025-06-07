@@ -3,3 +3,5 @@ conf/config.json
 db/listing.json
 node_modules/
 npm-debug.log
+logs/
+*.log

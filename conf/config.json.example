@@ -1,4 +1,5 @@
 {
+  "debugRawHtml": true,
   "providers": {
     "immoscout": {
       "url": "https://www.immobilienscout24.de/Suche/S-2/Wohnung-Miete/Berlin/Berlin/Wedding-Wedding_Schoeneberg-Schoeneberg/-/99,00-/EURO--9999,00/-/-/false"
@@ -39,4 +40,3 @@
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
   "intervalInMinutes": 2
 }
-
