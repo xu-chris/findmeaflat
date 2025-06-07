@@ -19,11 +19,6 @@ docker run -it --rm --name findmeaflat --init \
            ghcr.io/xu-chris/findmeaflat/findmeaflat:latest
 ```
 
-Alternatively, you could also use the docker package from this repo:
-```
-docker.pkg.github.com/xu-chris/findmeaflat/findmeaflat:latest
-```
-
 ### Docker Compose
 
 Of course, you can as well create a container with docker compose. You need to set the `user` values to the `User ID` and `Group ID` so the container can acutally write into the database file if you want to have and use it locally.
