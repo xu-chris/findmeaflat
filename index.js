@@ -3,12 +3,13 @@ require('rootpath')()
 const config = require('conf/config.json')
 const fs = require('fs')
 const util = require('util')
+const logger = require('lib/logger')
 
 const INTERVAL_MINUTES = config.intervalInMinutes || 5
 const PATH = './lib/sources'
 const INTERVAL = INTERVAL_MINUTES * 60 * 1000
 
-console.log(`Starting FindMeAFlat scraper with ${INTERVAL_MINUTES} minute intervals`)
+logger.app.info(`Starting FindMeAFlat scraper with ${INTERVAL_MINUTES} minute intervals`)
 
 let sources = []
 let intervalId = null
@@ -22,21 +23,21 @@ function loadSources() {
       try {
         return require(`${PATH}/${src}`)
       } catch (error) {
-        console.error(`Failed to load source ${src}:`, error.message)
+        logger.app.error(`Failed to load source ${src}:`, { error: error.message })
         return null
       }
     }).filter(Boolean)
     
-    console.log(`Loaded ${sources.length} sources: ${sourceFiles.map(f => f.replace('.js', '')).join(', ')}`)
+    logger.app.info(`Loaded ${sources.length} sources: ${sourceFiles.map(f => f.replace('.js', '')).join(', ')}`)
   } catch (error) {
-    console.error('Failed to load sources:', error.message)
+    logger.app.error('Failed to load sources:', { error: error.message })
     process.exit(1)
   }
 }
 
 async function main() {
   if (isRunning) {
-    console.log('Previous scraping cycle still running, skipping...')
+    logger.app.warn('Previous scraping cycle still running, skipping...')
     return
   }
 
@@ -44,15 +45,15 @@ async function main() {
   const startTime = Date.now()
   
   try {
-    console.log(`\n[${new Date().toISOString()}] Starting scraping cycle...`)
+    logger.performance.cycleStart(sources.length)
     
     const results = await Promise.allSettled(
       sources.map(async (source, index) => {
         try {
-          console.log(`Running source ${index + 1}/${sources.length}: ${source._source?.name || 'Unknown'}`)
+          logger.scraping.start(source._source?.name || 'Unknown', source._source?.url)
           return await source.run()
         } catch (error) {
-          console.error(`Source ${source._source?.name || index} failed:`, error.message)
+          logger.scraping.error(source._source?.name || index, error, source._source?.url)
           throw error
         }
       })
@@ -61,10 +62,10 @@ async function main() {
     const successful = results.filter(r => r.status === 'fulfilled').length
     const failed = results.filter(r => r.status === 'rejected').length
     
-    console.log(`Scraping cycle completed: ${successful} successful, ${failed} failed (${Date.now() - startTime}ms)`)
+    logger.performance.cycleEnd(Date.now() - startTime, successful, failed)
     
   } catch (error) {
-    console.error('Critical error in main cycle:', util.inspect(error, true, 2, true))
+    logger.app.error('Critical error in main cycle:', { error: error.message, stack: error.stack })
   } finally {
     isRunning = false
   }
@@ -72,22 +73,22 @@ async function main() {
 
 // Graceful shutdown
 function gracefulShutdown(signal) {
-  console.log(`\nReceived ${signal}. Shutting down gracefully...`)
+  logger.app.info(`Received ${signal}. Shutting down gracefully...`)
   
   if (intervalId) {
     clearInterval(intervalId)
-    console.log('Stopped interval timer')
+    logger.app.info('Stopped interval timer')
   }
   
   if (isRunning) {
-    console.log('Waiting for current scraping cycle to complete...')
+    logger.app.info('Waiting for current scraping cycle to complete...')
     // Give it 30 seconds to finish
     setTimeout(() => {
-      console.log('Force exit after timeout')
+      logger.app.warn('Force exit after timeout')
       process.exit(1)
     }, 30000)
   } else {
-    console.log('Goodbye!')
+    logger.app.info('Goodbye!')
     process.exit(0)
   }
 }
@@ -96,18 +97,18 @@ function gracefulShutdown(signal) {
 process.on('SIGINT', () => gracefulShutdown('SIGINT'))
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error)
+  logger.app.error('Uncaught Exception:', { error: error.message, stack: error.stack })
   gracefulShutdown('uncaughtException')
 })
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  logger.app.error('Unhandled Rejection:', { reason, promise: promise.toString() })
 })
 
 // Initialize and start
 loadSources()
 
 if (sources.length === 0) {
-  console.error('No sources loaded. Exiting.')
+  logger.app.error('No sources loaded. Exiting.')
   process.exit(1)
 }
 

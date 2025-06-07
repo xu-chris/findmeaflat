@@ -7,6 +7,7 @@ services:
     volumes:
       - ./conf/config.json:/app/conf/config.json
       - ./db/:/app/db/
+      - ./logs/:/app/logs/
     restart: unless-stopped
     network_mode: host
     # user: '100:100'

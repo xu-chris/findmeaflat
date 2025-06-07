@@ -12,6 +12,6 @@ RUN npm ci --progress=false --no-audit --loglevel=error
 
 COPY --chown=node:node lib/ lib/
 COPY --chown=node:node index.js ./
-RUN mkdir db conf
+RUN mkdir -p db conf logs
 
 CMD ["node","index.js"]
