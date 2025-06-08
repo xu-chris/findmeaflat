@@ -1,0 +1,48 @@
+# <type>[optional scope]: <description>
+
+# [optional body]
+
+# [optional footer(s)]
+
+# Type MUST be one of the following (Conventional Commits v1.0.0):
+# feat:     A new feature (correlates with MINOR in Semantic Versioning)
+# fix:      A bug fix (correlates with PATCH in Semantic Versioning)
+# build:    Changes that affect the build system or external dependencies
+# ci:       Changes to our CI configuration files and scripts
+# docs:     Documentation only changes
+# perf:     A code change that improves performance
+# refactor: A code change that neither fixes a bug nor adds a feature
+# style:    Changes that do not affect the meaning of the code
+# test:     Adding missing tests or correcting existing tests
+# 
+# For BREAKING CHANGES: append '!' after type/scope (e.g., feat!: or fix(api)!:)
+
+# Scope examples (optional but recommended):
+# - deps: dependency updates (build system related)
+# - api: changes to API interface
+# - scraper: changes to scraping functionality
+# - sources: changes to data sources (immoscout, etc.)
+# - logger: logging system changes
+# - config: configuration changes
+
+# Examples (following Conventional Commits v1.0.0):
+# feat(scraper): add new source for kleinanzeigen
+# fix(logger): resolve file rotation issue
+# build(deps): bump winston from 3.8.0 to 3.17.0
+# ci: update GitHub Actions to latest versions
+# docs: update README with new installation steps
+# perf(scraper): improve memory usage in data processing
+# refactor(sources): extract URL parsing to utility function
+# feat!: remove deprecated scrapeInterval config option
+
+# BREAKING CHANGE examples (MUST use footer):
+# feat!: remove support for Node.js 12
+# 
+# BREAKING CHANGE: Node.js 12 is no longer supported. Minimum version is now 14.
+
+# Footer examples:
+# BREAKING CHANGE: description of breaking change
+# Reviewed-by: Z
+# Refs: #123
+# Fixes #456
+# Closes #789

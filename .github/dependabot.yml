@@ -1,16 +1,63 @@
 version: 2
 updates:
+  # Docker ecosystem updates
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    commit-message:
+      # Use 'build' for Docker base image updates as they affect the build system
+      prefix: 'build'
+      prefix-development: 'build'
+      include: 'scope'
 
+  # npm ecosystem updates  
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 10
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    versioning-strategy: increase
+    commit-message:
+      # Use 'build' for dependency updates as per Conventional Commits spec
+      # Dependencies affect the build system and external dependencies
+      prefix: 'build'
+      prefix-development: 'build'
+      include: 'scope'
+    ignore:
+      # Ignore major version updates for core dependencies to avoid breaking changes
+      - dependency-name: 'lowdb'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'x-ray'
+        update-types: ['version-update:semver-major']
 
+  # GitHub Actions ecosystem updates
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    commit-message:
+      # Use 'ci' for CI configuration files and scripts
+      prefix: 'ci'
+      prefix-development: 'ci'
+      include: 'scope'

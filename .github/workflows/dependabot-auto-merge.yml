@@ -1,0 +1,92 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Auto-merge build system updates (patch and minor)
+        if: |
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+           steps.metadata.outputs.update-type == 'version-update:semver-minor') &&
+          (steps.metadata.outputs.package-ecosystem == 'npm' || 
+           steps.metadata.outputs.package-ecosystem == 'docker')
+        run: |
+          case "${{ steps.metadata.outputs.update-type }}" in
+            "version-update:semver-patch")
+              gh pr comment "$PR_URL" --body "🔧 **build(deps)**: Auto-merging patch dependency update (follows Conventional Commits v1.0.0)"
+              ;;
+            "version-update:semver-minor")
+              gh pr comment "$PR_URL" --body "✨ **build(deps)**: Auto-merging minor dependency update (follows Conventional Commits v1.0.0)"
+              ;;
+          esac
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge CI configuration updates
+        if: steps.metadata.outputs.package-ecosystem == 'github_actions'
+        run: |
+          gh pr comment "$PR_URL" --body "🔄 **ci**: Auto-merging GitHub Actions update (follows Conventional Commits v1.0.0)"
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on major updates (potential breaking changes)
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        run: |
+          gh pr comment "$PR_URL" --body "🚨 **BREAKING CHANGE REVIEW REQUIRED** - This is a major version update that requires manual review. According to Conventional Commits v1.0.0, this will result in a `build!` commit indicating potential breaking changes in dependencies. Please review the changelog and test thoroughly before merging."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Label PRs based on Conventional Commits types
+        run: |
+          # Label based on conventional commit type according to v1.0.0 spec
+          case "${{ steps.metadata.outputs.package-ecosystem }}" in
+            "npm"|"docker")
+              case "${{ steps.metadata.outputs.update-type }}" in
+                "version-update:semver-patch"|"version-update:semver-minor")
+                  gh pr edit "$PR_URL" --add-label "type:build"
+                  ;;
+                "version-update:semver-major")
+                  gh pr edit "$PR_URL" --add-label "type:build" --add-label "breaking-change"
+                  ;;
+              esac
+              ;;
+            "github_actions")
+              gh pr edit "$PR_URL" --add-label "type:ci"
+              ;;
+          esac
+          
+          # Label by ecosystem
+          case "${{ steps.metadata.outputs.package-ecosystem }}" in
+            "npm")
+              gh pr edit "$PR_URL" --add-label "dependencies:npm"
+              ;;
+            "docker")
+              gh pr edit "$PR_URL" --add-label "dependencies:docker"
+              ;;
+            "github_actions")
+              gh pr edit "$PR_URL" --add-label "dependencies:github-actions"
+              ;;
+          esac
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
