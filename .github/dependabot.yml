@@ -1,5 +1,6 @@
 version: 2
 updates:
+  # Docker ecosystem updates
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
@@ -12,9 +13,12 @@ updates:
     assignees:
       - '@xu-chris'
     commit-message:
-      prefix: 'docker'
+      # Use 'build' for Docker base image updates as they affect the build system
+      prefix: 'build'
+      prefix-development: 'build'
       include: 'scope'
 
+  # npm ecosystem updates  
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
@@ -28,7 +32,10 @@ updates:
       - '@xu-chris'
     versioning-strategy: increase
     commit-message:
-      prefix: 'npm'
+      # Use 'build' for dependency updates as per Conventional Commits spec
+      # Dependencies affect the build system and external dependencies
+      prefix: 'build'
+      prefix-development: 'build'
       include: 'scope'
     ignore:
       # Ignore major version updates for core dependencies to avoid breaking changes
@@ -37,6 +44,7 @@ updates:
       - dependency-name: 'x-ray'
         update-types: ['version-update:semver-major']
 
+  # GitHub Actions ecosystem updates
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
@@ -49,5 +57,7 @@ updates:
     assignees:
       - '@xu-chris'
     commit-message:
+      # Use 'ci' for CI configuration files and scripts
       prefix: 'ci'
+      prefix-development: 'ci'
       include: 'scope'
