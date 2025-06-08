@@ -4,13 +4,50 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    commit-message:
+      prefix: 'docker'
+      include: 'scope'
 
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 10
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    versioning-strategy: increase
+    commit-message:
+      prefix: 'npm'
+      include: 'scope'
+    ignore:
+      # Ignore major version updates for core dependencies to avoid breaking changes
+      - dependency-name: 'lowdb'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'x-ray'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - '@xu-chris'
+    assignees:
+      - '@xu-chris'
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
