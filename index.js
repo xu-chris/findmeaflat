@@ -72,7 +72,7 @@ async function main() {
 }
 
 // Graceful shutdown
-function gracefulShutdown(signal) {
+async function gracefulShutdown(signal) {
   logger.app.info(`Received ${signal}. Shutting down gracefully...`)
   
   if (intervalId) {
@@ -83,12 +83,14 @@ function gracefulShutdown(signal) {
   if (isRunning) {
     logger.app.info('Waiting for current scraping cycle to complete...')
     // Give it 30 seconds to finish
-    setTimeout(() => {
+    setTimeout(async () => {
       logger.app.warn('Force exit after timeout')
+      await logger.shutdown()
       process.exit(1)
     }, 30000)
   } else {
     logger.app.info('Goodbye!')
+    await logger.shutdown()
     process.exit(0)
   }
 }
@@ -96,9 +98,9 @@ function gracefulShutdown(signal) {
 // Setup signal handlers
 process.on('SIGINT', () => gracefulShutdown('SIGINT'))
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', async (error) => {
   logger.app.error('Uncaught Exception:', { error: error.message, stack: error.stack })
-  gracefulShutdown('uncaughtException')
+  await gracefulShutdown('uncaughtException')
 })
 process.on('unhandledRejection', (reason, promise) => {
   logger.app.error('Unhandled Rejection:', { reason, promise: promise.toString() })
