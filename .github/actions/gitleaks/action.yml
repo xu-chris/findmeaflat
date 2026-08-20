@@ -1,0 +1,22 @@
+name: Gitleaks
+description: >-
+  Scan the full git history for secrets using a pinned, checksum-verified
+  binary. The caller must check out with fetch-depth 0; gitleaks refuses to run
+  on a shallow clone.
+
+runs:
+  using: composite
+  steps:
+    # The binary is ~7 MB and pinned to one version, so caching turns a ~20s
+    # download into a restore. Keyed on version and platform: a cache hit can
+    # only ever be the exact same build, and gitleaks.sh re-verifies the
+    # archive checksum on every invocation regardless.
+    - name: Cache Gitleaks binary
+      uses: actions/cache@v4
+      with:
+        path: _build/tools/gitleaks
+        key: gitleaks-8.30.1-${{ runner.os }}-${{ runner.arch }}
+
+    - name: Run Gitleaks
+      shell: bash
+      run: sh .github/scripts/gitleaks.sh

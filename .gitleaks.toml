@@ -1,0 +1,26 @@
+# Gitleaks configuration for FindMeAFlat.
+#
+# Extends the upstream default ruleset rather than replacing it: a hand-written
+# rule list silently loses coverage every time gitleaks adds a provider.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documented non-secrets"
+
+paths = [
+  # Example config: placeholder values only ("yourToken", "yourChatId").
+  '''conf/config\.json\.example''',
+  # Proposal documents quote public open-data endpoints and package checksums.
+  '''docs/proposals/.*\.md''',
+  # Pinned release checksums, not credentials.
+  '''\.github/scripts/gitleaks\.sh''',
+]
+
+regexTarget = "match"
+regexes = [
+  # Placeholders from README/config examples.
+  '''yourToken''',
+  '''yourChatId''',
+  '''yourApiKey''',
+]

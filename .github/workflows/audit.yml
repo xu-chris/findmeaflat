@@ -1,0 +1,281 @@
+name: Audit
+
+"on":
+  schedule:
+    # Every Monday at 9 AM UTC.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+  # Only audit when dependencies actually change. security.yml already runs
+  # npm audit on every PR, so re-running this on code-only pushes buys nothing.
+  pull_request:
+    paths:
+      - 'mix.lock'
+      - 'mix.exs'
+      - 'package.json'
+      - 'package-lock.json'
+  push:
+    branches: [master, main]
+    paths:
+      - 'mix.lock'
+      - 'mix.exs'
+      - 'package.json'
+      - 'package-lock.json'
+
+concurrency:
+  # Scoped by event so a push or dependency merge can never cancel the weekly
+  # scheduled audit -- schedule, push and dispatch on master all resolve
+  # github.ref to refs/heads/master, so an unscoped group would let them cancel
+  # each other and a real vulnerability could go unreported.
+  group: audit-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  security-audit:
+    name: Security & License Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect stack
+        id: stack
+        run: |
+          if [ -f mix.exs ]; then
+            echo "elixir=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "elixir=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract versions from mix.exs
+        id: versions
+        if: steps.stack.outputs.elixir == 'true'
+        run: |
+          chmod +x .github/scripts/extract_versions.sh
+          ./.github/scripts/extract_versions.sh
+
+      - name: Set up Elixir
+        if: steps.stack.outputs.elixir == 'true'
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ steps.versions.outputs.elixir }}
+          otp-version: ${{ steps.versions.outputs.otp }}
+
+      - name: Cache deps
+        if: steps.stack.outputs.elixir == 'true'
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-deps-${{ hashFiles('**/mix.lock') }}
+
+      - name: Install dependencies
+        if: steps.stack.outputs.elixir == 'true'
+        run: mix deps.get
+
+      - name: Run security audit
+        id: audit
+        env:
+          # Never interpolate ${{ }} directly into a run: block -- GitHub's own
+          # hardening guidance. The value is ours today, but the pattern is what
+          # bites when a field later carries untrusted input.
+          IS_ELIXIR: ${{ steps.stack.outputs.elixir }}
+        run: |
+          echo "Checking for security vulnerabilities..."
+          if [ "$IS_ELIXIR" = "true" ]; then
+            if mix deps.audit; then
+              echo "audit_result=success" >> "$GITHUB_OUTPUT"
+            else
+              echo "audit_result=failure" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # Node: audit at moderate and above, matching security.yml's gate.
+            if npm audit --audit-level=moderate; then
+              echo "audit_result=success" >> "$GITHUB_OUTPUT"
+            else
+              echo "audit_result=failure" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Check license compliance
+        id: license
+        run: |
+          chmod +x .github/scripts/check-licenses.sh
+          if .github/scripts/check-licenses.sh; then
+            echo "license_result=success" >> "$GITHUB_OUTPUT"
+          else
+            echo "license_result=failure" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for outdated dependencies
+        env:
+          AUDIT_RESULT: ${{ steps.audit.outputs.audit_result }}
+          LICENSE_RESULT: ${{ steps.license.outputs.license_result }}
+          IS_ELIXIR: ${{ steps.stack.outputs.elixir }}
+        run: |
+          {
+            echo "# Dependency Status Report"
+            echo ""
+            echo "Generated on: $(date)"
+            echo ""
+            echo "## Outdated Dependencies"
+            echo ""
+            echo '```'
+            if [ "$IS_ELIXIR" = "true" ]; then
+              mix hex.outdated 2>&1 || echo "Error checking outdated dependencies"
+            else
+              npm outdated 2>&1 || true
+            fi
+            echo '```'
+            echo ""
+            echo "## Security Status"
+            echo ""
+            if [ "$AUDIT_RESULT" = "success" ]; then
+              echo "No security vulnerabilities found"
+            else
+              echo "Security vulnerabilities detected - see workflow logs"
+            fi
+            echo ""
+            echo "## License Status"
+            echo ""
+            if [ "$LICENSE_RESULT" = "success" ]; then
+              echo "No problematic licenses found"
+            else
+              echo "Potentially problematic licenses detected - see license report"
+            fi
+          } > dependency_report.md
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-status-report
+          path: dependency_report.md
+          retention-days: 30
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: license-compliance-report
+          path: license_report.md
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Create security issue
+        if: steps.audit.outputs.audit_result == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Security vulnerabilities detected';
+            const body = [
+              '## Security alert',
+              '',
+              'The automated audit detected vulnerabilities in our dependencies.',
+              '',
+              '### Action required',
+              `1. Review the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '2. Update the affected dependencies',
+              '3. Verify, then close this issue',
+              '',
+              '---',
+              '> Opened automatically by the audit workflow.',
+            ].join('\n');
+
+            // Search by title, not by label: a `security` label that does not
+            // exist yet makes a label-filtered list return nothing, so every run
+            // would open a fresh duplicate.
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100,
+            });
+
+            if (existing.data.some(i => i.title === title)) {
+              core.info('Security issue already open.');
+              return;
+            }
+
+            // Creating with a label that does not exist returns 422 and throws,
+            // which would lose the alert entirely. An unlabelled security issue
+            // beats no security issue, so fall back and say what happened.
+            async function createIssue(title, body, labels) {
+              try {
+                const r = await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo, title, body, labels,
+                });
+                core.info(`Opened #${r.data.number} with labels: ${labels.join(', ')}`);
+              } catch (err) {
+                core.warning(
+                  `Labelled create failed (${err.status}: ${err.message}). ` +
+                  `Retrying unlabelled. Missing labels? See docs/agents/triage-labels.md.`
+                );
+                const r = await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo, title, body,
+                });
+                core.info(`Opened #${r.data.number} WITHOUT labels.`);
+              }
+            }
+
+            // `afk` marks this agent-actionable: a CVE fix is normally a version
+            // bump, which an agent can complete unattended.
+            await createIssue(title, body, ['security', 'bug', 'afk']);
+
+      - name: Create license issue
+        if: steps.license.outputs.license_result == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Problematic licenses detected';
+            const body = [
+              '## License compliance alert',
+              '',
+              'The automated license check flagged dependencies whose licences may',
+              'be incompatible with this project.',
+              '',
+              `Review the report in the [workflow run artifacts](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+              '',
+              '### Commonly problematic',
+              '- **GPL-3.0** - requires derivative works to be GPL-3.0',
+              '- **AGPL-3.0** - like GPL, but also covers network use',
+              '- **SSPL-1.0** - Server Side Public License',
+              '- **CC-BY-NC** - non-commercial use only',
+              '',
+              '---',
+              '> Opened automatically by the audit workflow.',
+            ].join('\n');
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100,
+            });
+
+            if (existing.data.some(i => i.title === title)) {
+              core.info('License issue already open.');
+              return;
+            }
+
+            // Creating with a label that does not exist returns 422 and throws,
+            // which would lose the alert entirely. An unlabelled security issue
+            // beats no security issue, so fall back and say what happened.
+            async function createIssue(title, body, labels) {
+              try {
+                const r = await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo, title, body, labels,
+                });
+                core.info(`Opened #${r.data.number} with labels: ${labels.join(', ')}`);
+              } catch (err) {
+                core.warning(
+                  `Labelled create failed (${err.status}: ${err.message}). ` +
+                  `Retrying unlabelled. Missing labels? See docs/agents/triage-labels.md.`
+                );
+                const r = await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo, title, body,
+                });
+                core.info(`Opened #${r.data.number} WITHOUT labels.`);
+              }
+            }
+
+            // Deliberately NO `afk`: licence compatibility is a product and legal
+            // decision, not a mechanical repair. Its absence routes a human here.
+            await createIssue(title, body, ['legal', 'dependencies']);

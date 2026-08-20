@@ -120,10 +120,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # NOTE: `base` must name a ref that exists. This repository's default
+      # branch is `master`, so the previous `base: main` silently scanned
+      # nothing. Full-history secret scanning is owned by gitleaks.yml; this
+      # step is the verified-credential second opinion.
       - name: Run TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: main
+          base: ${{ github.event.repository.default_branch || 'master' }}
           head: HEAD
-          extra_args: --debug --only-verified
+          extra_args: --only-verified

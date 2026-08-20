@@ -1,0 +1,32 @@
+name: Actionlint
+
+"on":
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: ["*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Statically lints the workflow YAML (expression syntax, runs-on labels, matrix
+  # typos) plus shellcheck over `run:` blocks. Cheap insurance, and it needs no
+  # language toolchain: actionlint's first-party image bundles shellcheck.
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color

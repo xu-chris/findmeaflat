@@ -1,0 +1,44 @@
+name: Gitleaks
+
+"on":
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: ["*"]
+  schedule:
+    # Weekly full-history sweep. A secret can enter through a path no PR touched
+    # (a force-push, a direct commit, a rewritten branch), so scanning only the
+    # diff is not enough on a public repository.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Scans the FULL git history, not just the diff. This repository is public and
+  # conf/config.json holds a Telegram bot token, so a token committed once and
+  # deleted later is still published forever in the history.
+  #
+  # Uses .github/scripts/gitleaks.sh: a pinned version (8.30.1) with per-platform
+  # SHA-256 checksums, so a compromised release cannot silently substitute a
+  # different binary. --redact keeps the finding out of the public log.
+  gitleaks:
+    name: Scan history for secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Gitleaks refuses to run on a shallow clone; the script checks for it
+          # and fails with instructions rather than silently scanning nothing.
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: ./.github/actions/gitleaks
