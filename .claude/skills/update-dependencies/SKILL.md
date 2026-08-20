@@ -9,7 +9,7 @@ description: Use when dependencies are stale, a Dependabot PR needs reviewing or
 
 Undefined terms — stance, the `Decided:` rule: [../\_shared/vocabulary.md](../_shared/vocabulary.md). **Bare paths like `docs/craft/` start at the repository root, not this file.**
 
-**Headless.** Weekly cron, Tuesday 09:00 UTC, from `.github/workflows/dependency-update-report.yml`, which invokes this skill by path — renaming the skill means editing that workflow in the same change. Runners: Claude cloud or Codex cloud. 1 run/week, no fan-out. Output lands on the pull request this run opens; the Dependabot PR gets a comment pointing at it, then closes.
+**Headless-capable.** Designed for a weekly cron, but **no such workflow exists yet**. `.github/workflows/audit.yml` runs the scan and opens an issue; enriching a Dependabot PR is currently a manual invocation. Output lands on the pull request this run opens; the Dependabot PR gets a comment pointing at it, then closes.
 
 | Mode | Entry |
 | --- | --- |

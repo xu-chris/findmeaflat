@@ -29,11 +29,11 @@ redesigned. Four of six runtime dependencies were last published between 2014 an
 2019, and the base image (`node:14-alpine`) has been end-of-life since 2023-04-30.
 
 Per-portal evidence, with the probe that produced it:
-[`docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md`](../docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md)
+[`docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md`](../docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md)
 
 The behavioural spec derived from this code — every selector, every normalisation
 quirk, every latent bug — is in
-[`CURRENT-SYSTEM.md`](../docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/CURRENT-SYSTEM.md).
+[`CURRENT-SYSTEM.md`](../docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/CURRENT-SYSTEM.md).
 **Read that before reading the code**; it already records what the code does and
 where it is wrong.
 

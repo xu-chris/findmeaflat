@@ -36,7 +36,7 @@ jobs:
           path: docs
 
   # Detects which stack this repository currently is. The Elixir rewrite is a
-  # proposal (docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/), not code,
+  # proposal (docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/), not code,
   # so today the Node job runs and the Elixir job skips. The day mix.exs lands at
   # the root, that flips with no workflow edit.
   detect-stack:

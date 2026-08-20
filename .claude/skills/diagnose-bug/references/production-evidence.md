@@ -5,7 +5,7 @@
 one; this project has none. Say so on the issue and diagnose without production evidence
 rather than inventing a source.
 
-`docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/STACK.md` lists `error_tracker`
+`docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/STACK.md` lists `error_tracker`
 and `sentry` as undecided candidates — adopting one is a bet nobody has placed.
 
 ## What evidence actually exists today

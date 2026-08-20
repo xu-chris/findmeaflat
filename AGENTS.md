@@ -14,7 +14,7 @@ Both states are real; know which one you are touching.
 | | Path | State |
 |---|---|---|
 | Current app | `index.js`, `lib/` | Plain CommonJS. No TypeScript, no build step, **no tests** |
-| Proposal | `docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/` | Ten documents. Nothing generated yet |
+| Proposal | `docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/` | Ten documents. Nothing generated yet |
 
 **Five of six portals do not crawl.** Immonet no longer exists (sunset into Immowelt),
 ImmoScout24 returns 401 behind an AWS WAF challenge, Immowelt and Kleinanzeigen URLs

@@ -36,7 +36,7 @@ size, and which selectors matched.
 | `immonet` | — | **Sunset into Immowelt.** Portal no longer exists |
 
 Full per-portal evidence:
-`docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md`.
+`docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/CRAWL-DIAGNOSIS.md`.
 
 ## Open data
 

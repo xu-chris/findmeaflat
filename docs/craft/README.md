@@ -35,7 +35,7 @@ Writing eight architecture rules for an application that does not exist yet woul
 inventing constraints from nothing. The rules that *are* real for this project — Ash
 over Ecto contexts, selectors as data, Oban OSS with a `PortalGate`, store every listing
 permanently, admin-only web surface — are recorded where they were actually decided:
-`docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/`.
+`docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/`.
 
 **Fill this directory once the Elixir application exists and real decisions accumulate.**
 At that point, move the rules out of the skill references into numbered files here and

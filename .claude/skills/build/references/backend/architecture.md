@@ -16,7 +16,7 @@ Project reference only; inherit authority and scope from the calling skill.
 
 ## Current decisions
 
-Recorded in `docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/`. That card is **still in `1-draft`** — nothing below is a Bet Go, and no Elixir code exists yet.
+Recorded in `docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite/`. That card has a **recorded Bet Go** and a `PLAN.md`; no Elixir code exists yet. Where PLAN and this file disagree, PLAN is newer — say so rather than silently following either.
 
 - **Ash, not plain Ecto contexts.** This app is mostly policy plus background jobs, which Ash policies and AshOban triggers express declaratively.
 - **AshAuthentication is decided, for the admin surface and the MCP server only.** Users authenticate through Telegram identity (`chat.id`) and never touch the web app. Pin the stable 4.x line, not the v5 RCs.

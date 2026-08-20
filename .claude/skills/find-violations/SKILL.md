@@ -9,7 +9,7 @@ description: Use when scanning the codebase for anything wrong with it — craft
 
 Undefined terms: [../\_shared/vocabulary.md](../_shared/vocabulary.md). **Bare paths are relative to the repository root, not this file.**
 
-**Mode A is headless.** Nightly cron, `.github/workflows/harness-find-violations.yml`. Runners: Claude cloud or Codex cloud. Expected 7 runs/week. **Mode B never runs on that cron** — see Modes below.
+**Mode A is headless-capable.** It is designed for a nightly cron, but **no such workflow exists yet** — until one is added, Mode A runs on request. **Mode B never runs on that cron** — see Modes below.
 
 **Angles, so the verify ladder applies** — [../\_shared/diverge-converge.md](../_shared/diverge-converge.md). Freeze the corpus and record the commands that built it. Give every agent the identical packet and one signature each. Group candidates by `(file, line)`, return `CONFIRMED`, `PLAUSIBLE`, or `REFUTED` per group, keep the first two. One signature per agent may push a run past that file's default of three agents; say how many ran and why.
 

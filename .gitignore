@@ -16,7 +16,7 @@ logs/
 .claude/launch.json
 .mcp.json
 
-# Elixir (from docs/proposals/1-draft/001-elixir-multi-tenant-rewrite)
+# Elixir (from docs/proposals/3-bet-go/001-elixir-multi-tenant-rewrite)
 /_build/
 /deps/
 /cover/
