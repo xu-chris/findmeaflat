@@ -1,0 +1,83 @@
+{
+  "env": {
+    "ENABLE_LSP_TOOL": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ls :*)",
+      "Bash(gh issue :*)",
+      "Bash(gh label list :*)",
+      "Bash(gh pr view :*)",
+      "Bash(ruby .agents/bin/check-proposal-board.rb)",
+      "Bash(.agents/bin/check-harness.sh)",
+      "mcp__tidewave__get_logs",
+      "mcp__tidewave__execute_sql_query",
+      "mcp__tidewave__get_ecto_schemas",
+      "mcp__tidewave__get_docs",
+      "mcp__tidewave__search_package_docs",
+      "mcp__tidewave__get_source_location",
+      "mcp__tidewave__project_eval"
+    ],
+    "deny": [
+      "NotebookEdit",
+      "DesignSync",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "ScheduleWakeup"
+    ],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "disableBundledSkills": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"$(git rev-parse --show-toplevel)/AGENTS.md\""
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.agents/hooks/worktree-init.sh\"",
+            "timeout": 600000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.agents/hooks/protect-secrets.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "This repository has no Elixir application yet (no mix.exs at the root) — the Elixir rewrite is a proposal in docs/proposals/, not code. If a mix.exs now exists AND you edited any .ex, .exs, or .heex file, run `mix ci`. Otherwise respond with {\"ok\": true, \"reason\": \"No Elixir project, or no Elixir files edited\"}."
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "wt list statusline --format=claude-code"
+  },
+  "enabledPlugins": {}
+}

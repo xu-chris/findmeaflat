@@ -1,0 +1,12 @@
+schema_version: 1
+inputs:
+  - name: RESEND_API_KEY
+    description: Resend API key for authenticating CLI commands. Obtain it from https://resend.com/api-keys.
+    required: true
+    kind: environment-variable
+    sensitive: true
+  - name: RESEND_PROFILE
+    description: Named authentication profile for selecting a stored API key with resend auth.
+    required: false
+    kind: environment-variable
+    sensitive: false
