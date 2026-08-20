@@ -224,6 +224,8 @@ exists for Berlin (Wohnlagen only) and Dortmund (complete). Munich publishes 199
 other city means hand-digitising a PDF table. That is also the moat, since nobody else
 wants to do it either.
 
-**Migration is a clean break, not a port.** No data migration is needed — `db/listing.json`
-holds only opaque IDs. Running both systems side by side during transition is the
-low-risk path, which argues for an `elixir/` sibling directory over a new repository.
+**Migration is a clean break, not a port.** No data migration is needed — the old
+`db/listing.json` holds only opaque IDs. **Decided: the Elixir app takes the repository
+root**, and the Node crawler moved to `.references/` as read-only history. Side-by-side
+running is therefore not available; the rollback story is redeploying the previous image
+tag, which must be true from the first slice.

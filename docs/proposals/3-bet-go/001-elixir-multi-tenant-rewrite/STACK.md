@@ -196,9 +196,10 @@ adding the extension later to a live database is a migration nobody enjoys.
 
 Nothing below is run yet. This is the plan to execute after the proposal is accepted.
 
-**Layout decision to make first:** new repo, or an `elixir/` directory beside the Node
-app during transition? A sibling directory keeps `CRAWL-DIAGNOSIS.md` next to the
-selectors it describes and lets the old bot keep running until the new one is proven.
+**Layout: decided.** The Elixir app takes the repository root; the Node crawler is
+archived in `.references/`. `mix igniter.new` creates a subdirectory by default, so
+generate into a temp directory and move the tree in — that cannot scatter files into
+`.github/` or `docs/` if a generator misbehaves.
 
 ```bash
 # 0. Elixir/OTP via .tool-versions (mise/asdf) — pin explicitly, do not inherit

@@ -144,8 +144,14 @@ search URL and per-pair state.
 | `consecutive_empty_runs` | integer — the health signal |
 | `last_success_at`, `last_error` | |
 
-`consecutive_empty_runs` is the mechanism that would have caught every failure in
-`CRAWL-DIAGNOSIS.md`. Three consecutive zero-parseable-card runs on a portal that
+~~`consecutive_empty_runs` is the mechanism that would have caught every failure in
+`CRAWL-DIAGNOSIS.md`.~~ **Wrong, and refuted by this proposal's own evidence.** The
+signal as specified fires only on *zero cards from a 200*, but `CRAWL-DIAGNOSIS.md`'s
+status column shows 403, 401, 410 and 410 for four of six portals — they never return
+200, so the counter never increments — and immosuchmaschine returns 200 with 22 cards
+whose IDs collapse, which is not zero. It would have caught **one** of six: wg-gesucht.
+See `PLAN.md` S12, which drives health from terminal fetch outcomes and per-field fill
+rates instead. Three consecutive zero-parseable-card runs on a portal that
 previously produced listings flips `state` to `:broken` and messages the subscriber:
 *"Immowelt hasn't returned any listings for 15 minutes — the portal may have changed.
 I've paused it."* Silence becomes a message.
