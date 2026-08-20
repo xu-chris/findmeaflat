@@ -51,6 +51,16 @@
             "timeout": 600000
           }
         ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.agents/hooks/cloud-container-setup.sh\"",
+            "timeout": 120000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -69,7 +79,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "This repository has no Elixir application yet (no mix.exs at the root) — the Elixir rewrite is a proposal in docs/proposals/, not code. If a mix.exs now exists AND you edited any .ex, .exs, or .heex file, run `mix ci`. Otherwise respond with {\"ok\": true, \"reason\": \"No Elixir project, or no Elixir files edited\"}."
+            "prompt": "This repository has no Elixir application yet (no mix.exs at the root) \u2014 the Elixir rewrite is a proposal in docs/proposals/, not code. If a mix.exs now exists AND you edited any .ex, .exs, or .heex file, run `mix ci`. Otherwise respond with {\"ok\": true, \"reason\": \"No Elixir project, or no Elixir files edited\"}."
           }
         ]
       }
