@@ -14,7 +14,7 @@ name: Audit
       - 'package.json'
       - 'package-lock.json'
   push:
-    branches: [master, main]
+    branches: [master, main, develop]
     paths:
       - 'mix.lock'
       - 'mix.exs'

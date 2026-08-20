@@ -2,7 +2,7 @@ name: Gitleaks
 
 "on":
   push:
-    branches: [master, main]
+    branches: [master, main, develop]
   pull_request:
     branches: ["*"]
   schedule:
