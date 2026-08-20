@@ -27,25 +27,26 @@ Authorship of the Node.js implementation, by commit count across full history:
 Automated dependency commits (Dependabot) account for the remainder.
 
 
-Licensing history
------------------
+Licensing
+---------
 
-No LICENSE file has ever existed in this repository, nor in the
-mischkew/findmeaflat repository it was forked from. The only licence
-assertion is a single field in package.json:
+LICENSE contains the GNU Affero General Public License v3.0, and it governs
+the Elixir implementation of FindMeAFlat -- a from-scratch reimplementation in
+a different language, with a different architecture, carrying over no code from
+the Node.js implementation. It is a new work, and the AGPL applies to it in
+full, including its network-use provision: anyone who runs a modified version
+as a network service must offer that version's source to its users.
+
+    Copyright (C) 2026 Chris Xu
+
+The Node.js implementation is a separate matter and is NOT relicensed by that
+grant. No LICENSE file has ever existed in this repository, nor in the
+mischkew/findmeaflat repository it was forked from. The only licence assertion
+for it is a single field in package.json:
 
     "license": "MIT"
 
-This NOTICE records that fact rather than resolving it. The Node.js
-implementation is retained here for history and is not the subject of any
-licence grant made by the current maintainer on the original author's behalf.
-
-
-The Elixir implementation
--------------------------
-
-The Elixir rewrite proposed in
-docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/ is a from-scratch
-reimplementation: a different language, a different architecture, and no code
-carried over from the Node.js implementation. It is a new work, and its licence
-is stated in LICENSE.
+That field is recorded here as a fact, not resolved. The current maintainer
+cannot grant a licence on the original author's behalf, so the Node.js code is
+retained for history under whatever terms its authors intended, and the AGPL
+grant above does not extend to it.

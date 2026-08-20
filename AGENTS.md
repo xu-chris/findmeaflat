@@ -1,9 +1,9 @@
 # FindMeAFlat
 
 Crawls German real-estate portals for new listings and notifies via Telegram.
-Public repository (`xu-chris/findmeaflat`). **Licence unresolved** — no LICENSE file has
-ever existed; only a `"license": "MIT"` field in `package.json`. See `NOTICE` for
-provenance and authorship.
+Public repository (`xu-chris/findmeaflat`), **AGPL-3.0**. The AGPL covers the Elixir
+implementation, which is a new work; it does not relicense the Node.js code, whose terms
+were never resolved. See `NOTICE` for provenance, authorship, and that distinction.
 
 ## What this repo is right now
 
