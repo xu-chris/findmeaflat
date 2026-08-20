@@ -5,3 +5,25 @@ node_modules/
 npm-debug.log
 logs/
 *.log
+
+# Agent harness — local, per-machine, never committed.
+# settings.local.json accumulates per-machine tool permissions: absolute home
+# paths, other projects' file layouts, and which third-party services this
+# machine talks to. None of it is a secret, none of it belongs in a public repo.
+.claude/settings.local.json
+.claude/worktree.md
+.claude/.worktree-setup.lock/
+.claude/launch.json
+.mcp.json
+
+# Elixir (from docs/proposals/1-draft/001-elixir-multi-tenant-rewrite)
+/_build/
+/deps/
+/cover/
+/doc/
+erl_crash.dump
+*.ez
+/priv/static/assets/
+/priv/static/cache_manifest.json
+config/.env.dev
+config/.env.test
