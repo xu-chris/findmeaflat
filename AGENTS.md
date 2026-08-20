@@ -7,8 +7,8 @@ provenance and authorship.
 
 ## What this repo is right now
 
-**A Node.js 
-crawler that is largely broken, plus a written proposal to replace it with Elixir.**
+**A Node.js crawler that is largely broken, plus a written proposal to replace it
+with Elixir.**
 Both states are real; know which one you are touching.
 
 | | Path | State |
