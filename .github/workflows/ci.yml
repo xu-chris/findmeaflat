@@ -33,7 +33,7 @@ jobs:
         with:
           check_filenames: true
           ignore_words_file: .codespellignore
-          path: lib docs index.js
+          path: docs
 
   # Detects which stack this repository currently is. The Elixir rewrite is a
   # proposal (docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/), not code,
@@ -56,11 +56,10 @@ jobs:
             echo "elixir=false" >> "$GITHUB_OUTPUT"
             echo "::notice::No mix.exs - skipping the Elixir gate."
           fi
-          if [ -f package.json ]; then
-            echo "node=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "node=false" >> "$GITHUB_OUTPUT"
-          fi
+          # The Node crawler now lives in .references/ as read-only history and
+          # is deliberately NOT gated: it is not maintained, and a red build on
+          # archived code would train everyone to ignore CI.
+          echo "node=false" >> "$GITHUB_OUTPUT"
 
   # The current Node crawler has no test suite and no lint script, so this is
   # deliberately modest: syntax and formatting only. Do not let it read as
@@ -258,7 +257,7 @@ jobs:
             - This is a public repository. Flag anything that would publish an
               absolute home path, a Telegram bot token, a chat ID, or another
               project's internal names.
-            - `conf/config.json` holds the bot token and is gitignored. Flag any
+            - `.references/conf/config.json` holds the bot token and is gitignored. Flag any
               change that would commit it or echo its contents.
             - Portal selectors belong in data, not code. Flag a hardcoded CSS
               selector added to an Elixir module.

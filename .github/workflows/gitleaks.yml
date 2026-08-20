@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   # Scans the FULL git history, not just the diff. This repository is public and
-  # conf/config.json holds a Telegram bot token, so a token committed once and
+  # .references/conf/config.json holds a Telegram bot token, so a token committed once and
   # deleted later is still published forever in the history.
   #
   # Uses .github/scripts/gitleaks.sh: a pinned version (8.30.1) with per-platform

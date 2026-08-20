@@ -11,15 +11,13 @@ name: Audit
     paths:
       - 'mix.lock'
       - 'mix.exs'
-      - 'package.json'
-      - 'package-lock.json'
+
   push:
     branches: [master, main, develop]
     paths:
       - 'mix.lock'
       - 'mix.exs'
-      - 'package.json'
-      - 'package-lock.json'
+
 
 concurrency:
   # Scoped by event so a push or dependency merge can never cancel the weekly
@@ -93,12 +91,10 @@ jobs:
               echo "audit_result=failure" >> "$GITHUB_OUTPUT"
             fi
           else
-            # Node: audit at moderate and above, matching security.yml's gate.
-            if npm audit --audit-level=moderate; then
-              echo "audit_result=success" >> "$GITHUB_OUTPUT"
-            else
-              echo "audit_result=failure" >> "$GITHUB_OUTPUT"
-            fi
+            # No Elixir project yet, and the Node crawler is archived in
+            # .references/ and no longer audited. Nothing to scan.
+            echo "No maintained dependency manifest yet - skipping."
+            echo "audit_result=success" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check license compliance
@@ -128,7 +124,7 @@ jobs:
             if [ "$IS_ELIXIR" = "true" ]; then
               mix hex.outdated 2>&1 || echo "Error checking outdated dependencies"
             else
-              npm outdated 2>&1 || true
+              echo "No maintained dependency manifest yet."
             fi
             echo '```'
             echo ""

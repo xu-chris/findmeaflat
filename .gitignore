@@ -1,6 +1,6 @@
 .DS_Store
-conf/config.json
-db/listing.json
+.references/conf/config.json
+.references/db/listing.json
 node_modules/
 npm-debug.log
 logs/
