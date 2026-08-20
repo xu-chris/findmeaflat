@@ -39,7 +39,7 @@ it and **must stay in sync with `.tool-versions`** (`erlang 28.5`,
 | Host | Needed for |
 |---|---|
 | `builds.hex.pm` | precompiled Erlang/OTP and Elixir |
-| `apt.postgresql.org` | PGDG PostgreSQL 18, postgis, pgvector |
+| `apt.postgresql.org` | PGDG PostgreSQL 18 and its extension packages |
 | `repo.hex.pm`, `hex.pm` | `mix deps.get` |
 | `github.com` | clone, push |
 
@@ -72,14 +72,17 @@ connected account can see, installed or not.
   published OTP reference can carry a patch suffix the pin does not
   (`OTP-28.5.0.2` for `erlang 28.5`), so it resolves from the build index rather
   than guessing a filename.
-- **PostgreSQL 18** from PGDG on port **5433**, matching `ci.yml`. Credentials
+- **PostgreSQL 18** from PGDG on port **5434**, matching `ci.yml` and
+  `docker-compose.yml`. Not 5433 — that collides with other projects' test
+  databases on a shared developer machine. Credentials
   `postgres` / `postgres`. The base image's own cluster on 5432 is left alone.
-- **postgis** and **pgvector**, best-effort. The first migration enables both
-  even though Phase 1 uses neither, because adding an extension to a live
-  database later is a migration nobody enjoys. If a package is unavailable the
-  script logs it and continues, and the SessionStart hook repeats the warning —
-  otherwise the gap surfaces weeks later as a migration error that reads like a
-  code bug.
+- **pgvector**, and **postgis best-effort**. Phase 1 uses neither. `vector` is
+  taken because it is free — the dev image already carries it — while `postgis`
+  is deferred to the slice that first needs it: no stock PG18 image ships both
+  (verified against `pgvector/pgvector:pg18` and `postgis/postgis:18-3.6`), so
+  requiring it now would force a custom database image for a Phase 3 feature.
+  If a package is unavailable the script logs it and continues, and the
+  SessionStart hook repeats the warning.
 - **UTF-8 encoding with an explicit `C.UTF-8` locale.** Without it `initdb`
   inherits the container's POSIX locale and lands on `SQL_ASCII`, which would
   corrupt exactly this project's primary data: German listing titles and street

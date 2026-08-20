@@ -1,0 +1,43 @@
+# Development and test database.
+#
+# One container on 5434, matching .github/workflows/ci.yml's service container
+# and the port .agents/hooks/elixir-worktree-setup.sh derives worktree databases
+# against. Dev and test databases are separate names in the same server.
+#
+# Image note: pgvector/pgvector:pg18 is stock Postgres 18 plus pgvector. It does
+# NOT carry postgis, and no stock PG18 image carries both — verified against
+# pgvector/pgvector:pg18 and postgis/postgis:18-3.6. Phase 1 uses neither
+# extension, so the project takes `vector` (free, already in this image) and
+# defers `postgis` to the slice that first needs it, rather than committing to a
+# custom image build on day one.
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: find_me_a_flat_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: find_me_a_flat_dev
+    ports:
+      - '5434:5432'
+    # Ephemeral by design: this holds crawl data that is trivially re-fetched,
+    # and speed matters more than durability on a dev box.
+    #
+    # Mount at /var/lib/postgresql, NOT /var/lib/postgresql/data. PostgreSQL 18
+    # images moved the data directory into a subdirectory of that path; mounting
+    # the old location makes the container exit 1 with a pg_upgrade warning.
+    tmpfs:
+      - /var/lib/postgresql
+    command:
+      - postgres
+      - -c
+      - fsync=off
+      - -c
+      - synchronous_commit=off
+      - -c
+      - full_page_writes=off
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10

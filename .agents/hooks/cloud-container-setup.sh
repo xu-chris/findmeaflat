@@ -43,7 +43,7 @@ emit_context() {
 # Defaults matching the setup script, overridden by whatever it recorded.
 FINDMEAFLAT_SETUP_STATUS=unknown
 FINDMEAFLAT_PG_VERSION=18
-FINDMEAFLAT_PG_PORT=5433
+FINDMEAFLAT_PG_PORT=5434
 # shellcheck disable=SC1091  # written at environment-build time, not in the repo
 [ -f "$STATE_DIR/env" ] && . "$STATE_DIR/env"
 

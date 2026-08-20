@@ -31,8 +31,9 @@ OTP_VERSION="${FINDMEAFLAT_OTP_VERSION:-28.5}"
 ELIXIR_VERSION="${FINDMEAFLAT_ELIXIR_VERSION:-1.20.1}"
 # PostgreSQL 18 matches .github/workflows/ci.yml.
 PG_VERSION="${FINDMEAFLAT_PG_VERSION:-18}"
-# 5433 is the port ci.yml's service container and the worktree hook use.
-PG_PORT="${FINDMEAFLAT_PG_PORT:-5433}"
+# 5434 is the port ci.yml, docker-compose.yml and the worktree hook use.
+# Deliberately not 5433, which collides with other projects' test databases.
+PG_PORT="${FINDMEAFLAT_PG_PORT:-5434}"
 
 OTP_MAJOR="${OTP_VERSION%%.*}"
 BUILDS="https://builds.hex.pm/builds"

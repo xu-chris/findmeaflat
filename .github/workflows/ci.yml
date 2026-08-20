@@ -114,8 +114,11 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: find_me_a_flat_test
         ports:
-          # Host 5433 matches config/.env.test and the worktree setup hook.
-          - 5433:5432
+          # Host 5434 matches docker-compose.yml and the worktree setup hook.
+          # NOT 5433: that port is commonly taken by another project's database
+          # on a developer machine, and a dev pointing migrations at the wrong
+          # server is a silent, expensive mistake.
+          - 5434:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -159,7 +162,7 @@ jobs:
           psql -h localhost -U postgres -c "SELECT pg_reload_conf();"
         env:
           PGPASSWORD: postgres
-          PGPORT: 5433
+          PGPORT: 5434
 
       # Canonical full gate. The local pre-push hook invokes this same alias.
       - run: mix ci

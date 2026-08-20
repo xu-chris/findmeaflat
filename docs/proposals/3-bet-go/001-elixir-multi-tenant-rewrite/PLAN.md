@@ -184,6 +184,19 @@ last two minutes, 503 otherwise; `mix ci` green in CI.
 assertion that catches a health check wired to "the app is up" rather than "the work
 happened".
 **Green:** generators, five domains (`Reference` empty), extensions migration.
+
+**Extensions — corrected against reality.** The design said enable `postgis` *and*
+`vector` in the first migration. **No stock PostgreSQL 18 image ships both** — verified
+against `pgvector/pgvector:pg18` (vector, no postgis) and `postgis/postgis:18-3.6`
+(postgis, no vector) — so requiring both forces a custom database image on day one for
+capabilities Phase 1 never uses. `STACK.md` §4a already concludes the Phase 2 route is
+*"do not geocode — join on the address string"*, which needs neither. **Enable `vector`
+only** (free: the dev image carries it); `postgis` moves to the slice that first needs it.
+*This is the pragmatic review's objection, upheld by a verified fact.*
+
+**Local database:** `docker compose up -d` → PostgreSQL 18 on **5434**, user/password
+`postgres`. Not 5433: that port is commonly held by another project's test database on a
+developer machine, and pointing migrations at the wrong server is silent and expensive.
 **Verify:** `mix ci`
 **Reads:** `STACK.md` §5, `.github/workflows/ci.yml`
 **Uncertainty:** `mix igniter.new` writes a subdirectory — generate to a temp dir and
