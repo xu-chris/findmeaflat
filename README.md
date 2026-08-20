@@ -42,7 +42,7 @@ services:
 To run the bot directly, clone the repository, install the dependencies and start the application:
 
 ```
-git clone https://github.com/adriankumpf/findmeaflat.git
+git clone https://github.com/xu-chris/findmeaflat.git
 npm ci
 npm start
 ```

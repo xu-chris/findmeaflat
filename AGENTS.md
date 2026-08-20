@@ -1,7 +1,9 @@
 # FindMeAFlat
 
 Crawls German real-estate portals for new listings and notifies via Telegram.
-Public repository (`xu-chris/findmeaflat`), MIT, forked from `adriankumpf/findmeaflat`.
+Public repository (`xu-chris/findmeaflat`). **Licence unresolved** — no LICENSE file has
+ever existed; only a `"license": "MIT"` field in `package.json`. See `NOTICE` for
+provenance and authorship.
 
 ## What this repo is right now
 

@@ -261,8 +261,9 @@ Seven concrete adjustments, all cheap now and expensive later:
    now; does need deciding before the first buyer conversation.
 3. **Is there a business model?** Three candidates now: freemium (free notifications,
    paid Mietspiegel check), B2G/B2B demand statistics per `DEMAND-DATA.md`, or grant
-   funding for an open index. All interact with licensing — this repo is MIT and forked
-   from `adriankumpf/findmeaflat`.
+   funding for an open index. All interact with licensing, and the licence is currently
+   **unresolved** — see `NOTICE`. The Elixir rewrite is a new work and can carry any
+   licence; the choice should precede the first public release, not follow it.
 4. **How much Mietspiegel digitisation are you willing to do by hand?** The gating cost
    for every city beyond Berlin and Dortmund. No amount of engineering removes it.
 5. **How exposed do you want to be on the portals' terms?** A private tool for five

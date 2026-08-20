@@ -1,0 +1,51 @@
+FindMeAFlat
+===========
+
+Crawls German real-estate portals for new listings and notifies via Telegram.
+
+
+Provenance
+----------
+
+This repository descends from work by Adrian Kumpf, who wrote the original
+Node.js implementation beginning 2016-11-13 (commit 6d77323, "Add basic
+scraper"). That original repository, github.com/adriankumpf/findmeaflat, is
+no longer available.
+
+GitHub records this repository's fork parent as github.com/mischkew/findmeaflat
+(Sven Mkw), which is the route the fork was taken through. None of that
+repository's own commits are present here — verified across all refs — so the
+code lineage in this repository runs directly from Adrian Kumpf's work.
+
+Authorship of the Node.js implementation, by commit count across full history:
+
+  Adrian Kumpf   93 commits   2016-11-13 onward   original author
+  Chris Xu       86 commits   2021-03-25 onward   maintainer
+                                                  (also committed as
+                                                   "Chris Reichel")
+
+Automated dependency commits (Dependabot) account for the remainder.
+
+
+Licensing history
+-----------------
+
+No LICENSE file has ever existed in this repository, nor in the
+mischkew/findmeaflat repository it was forked from. The only licence
+assertion is a single field in package.json:
+
+    "license": "MIT"
+
+This NOTICE records that fact rather than resolving it. The Node.js
+implementation is retained here for history and is not the subject of any
+licence grant made by the current maintainer on the original author's behalf.
+
+
+The Elixir implementation
+-------------------------
+
+The Elixir rewrite proposed in
+docs/proposals/1-draft/001-elixir-multi-tenant-rewrite/ is a from-scratch
+reimplementation: a different language, a different architecture, and no code
+carried over from the Node.js implementation. It is a new work, and its licence
+is stated in LICENSE.
