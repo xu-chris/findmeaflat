@@ -71,7 +71,44 @@ recorded here as decided rather than proposed:
   Not a bet, and it cannot be one until the product has thousands of users — but it
   imposes six cheap Phase 1 design choices. See `DEMAND-DATA.md`.
 
-What remains proposed rather than accepted is the rewrite itself.
+**Decided: Shape Go by Chris.** His words, across the shaping conversation:
+*"Lets pick that name and continue."* — keeping `FindMeAFlat` — and
+*"AGPL and put the elixir app in the repo root"*, and
+*"Move the node code into `.references/` since we will use it for referneces,
+but won't need it anymore."*
+
+**Decided: Bet Go by Chris** — *"create a thorough plan for implementation
+first, including the tickets."* A request to plan the implementation and open
+the tickets commits to building it; recorded here as the Bet Go rather than
+left implicit. **If that reads it too strongly, say so and the card moves back
+to `2-shape-go`.**
+
+### Bet
+
+**What we bet on:** Phase 1 only — a working, multi-tenant Telegram notifier.
+Four portals crawling (immowelt, kleinanzeigen, immosuchmaschine, wg_gesucht),
+subscribers and searches as rows, self-service onboarding in Telegram, an
+authenticated admin surface, and portal breakage that announces itself.
+
+**Good Enough:** Chris and one other person each run their own searches against
+one deployment, set up entirely from a phone, and receive a correctly formatted
+new listing within one crawl interval. A portal that stops parsing flips to
+`:broken` and says so in Telegram within three cycles.
+
+**Complexity: Yellow** — five Ash domains, a new external-fetch boundary, a
+conversational UI, and an admin auth surface. It crosses more than one context
+window and needs a plan. Expected context: 10–12 slices, roughly 100k tokens
+each.
+
+**Explicitly excluded:**
+- ImmoScout24 and any headless-browser tier — configured, visibly degraded
+- Immonet — deleted, the portal no longer exists
+- Immowelt pagination — page 1 only, ~32 newest cards per run
+- All enrichment: Mietspiegel, buildings, providers, credibility, demand data
+- Any user-facing web UI, now or later
+- Public multi-tenant hosting for strangers
+
+What remains, after those decisions, is execution.
 
 **Proposed: rewrite as a single multi-tenant Elixir application** — Phoenix, Ash,
 Postgres, Oban, `ex_gram`, `Req` and `Floki` — replacing the per-user Node deployment.
