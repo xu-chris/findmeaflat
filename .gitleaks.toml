@@ -9,6 +9,15 @@ useDefault = true
 description = "Documented non-secrets"
 
 paths = [
+  # Phoenix generates a literal secret_key_base into config/dev.exs and
+  # config/test.exs. They are high-entropy, so gitleaks flags them, but they
+  # protect nothing: they sign dev and test sessions only, and production reads
+  # SECRET_KEY_BASE from the environment and raises when it is missing
+  # (config/runtime.exs). Scoped to these two files by name rather than to
+  # config/ as a whole, so a real secret landing in runtime.exs or prod.exs
+  # still fails the scan.
+  '''config/dev\.exs''',
+  '''config/test\.exs''',
   # Example config: placeholder values only ("yourToken", "yourChatId").
   '''conf/config\.json\.example''',
   # Proposal documents quote public open-data endpoints and package checksums.
