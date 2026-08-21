@@ -1,5 +1,10 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# FindMeAFlat serves no public content.
 #
-# To ban all spiders from the entire site uncomment the next two lines:
-# User-agent: *
-# Disallow: /
+# Users interact through Telegram; the only routes here are an unauthenticated
+# health check and, later, the Telegram webhook and an authenticated admin
+# surface. There is nothing here worth indexing, and anything a crawler did
+# reach would be operational surface rather than content.
+#
+# Disallow everything, for every agent, until that changes.
+User-agent: *
+Disallow: /

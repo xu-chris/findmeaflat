@@ -7,10 +7,6 @@ defmodule FindMeAFlat.Repo.Migrations.InitialSchemaExtensions1 do
 
   use Ecto.Migration
 
-  # Enabling an extension and defining a SQL function can only be raw SQL, and this
-  # file is generated from FindMeAFlat.Repo.installed_extensions/0.
-  # excellent_migrations:safety-assured-for-this-file raw_sql_executed
-
   def up do
     execute("""
     CREATE OR REPLACE FUNCTION ash_elixir_or(left BOOLEAN, in right ANYCOMPATIBLE, out f1 ANYCOMPATIBLE)

@@ -7,10 +7,6 @@ defmodule FindMeAFlat.Repo.Migrations.InitialSchema do
 
   use Ecto.Migration
 
-  # The only drop here is in `down`, undoing the table `up` creates. The checker
-  # reads the whole file, not the direction, so it has to be told.
-  # excellent_migrations:safety-assured-for-this-file table_dropped
-
   def up do
     create table(:operators, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuidv7()"), primary_key: true
