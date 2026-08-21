@@ -24,6 +24,13 @@ paths = [
   '''docs/proposals/.*\.md''',
   # Pinned release checksums, not credentials.
   '''\.github/scripts/gitleaks\.sh''',
+  # Portal response bodies, captured verbatim and never edited -- their whole
+  # value is that they are byte-for-byte what the portal served. They carry the
+  # keys every visitor's browser receives (kleinanzeigen ships a search-only
+  # data-algolia-api-key), which are public by design and none of ours. Scoped to
+  # this one directory: a fixture of somebody else's HTML cannot contain our
+  # credentials, and anything outside it still fails the scan.
+  '''test/support/fixtures/portals/.*\.html''',
 ]
 
 regexTarget = "match"
