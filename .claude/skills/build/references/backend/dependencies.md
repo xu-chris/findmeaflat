@@ -1,5 +1,13 @@
 
 <!-- usage-rules-start -->
+<!-- usage-rules-header -->
+# Usage Rules
+
+**IMPORTANT**: Consult these usage rules early and often when working with the packages listed below.
+Before attempting to use any of these packages or to discover if you should use them, review their
+usage rules to understand the correct patterns, conventions, and best practices.
+<!-- usage-rules-header-end -->
+
 <!-- ash-start -->
 ## ash usage
 _A declarative, extensible framework for building Elixir applications._
@@ -62,12 +70,6 @@ _A declarative, extensible framework for building Elixir applications._
 ## ash:testing usage
 [ash:testing usage rules](deps/ash/usage-rules/testing.md)
 <!-- ash:testing-end -->
-<!-- ash_money-start -->
-## ash_money usage
-_The extension for working with money types in Ash._
-
-[ash_money usage rules](deps/ash_money/usage-rules.md)
-<!-- ash_money-end -->
 <!-- ash_oban-start -->
 ## ash_oban usage
 _The extension for integrating Ash resources with Oban._
@@ -204,29 +206,9 @@ _A code generation and project patching framework_
 
 [igniter usage rules](deps/igniter/usage-rules.md)
 <!-- igniter-end -->
-<!-- req_llm-start -->
-## req_llm usage
-_req_llm_
-
-[req_llm usage rules](deps/req_llm/usage-rules.md)
-<!-- req_llm-end -->
-<!-- mdex-start -->
-## mdex usage
-_Fast and extensible Markdown for Elixir_
-
-[mdex usage rules](deps/mdex/usage-rules.md)
-<!-- mdex-end -->
-<!-- language_list-start -->
-## language_list usage
-_An elixir implementation of the language list ruby gem.
-This package provides language data in the form of a list, provides filtering capabilities,
-and allows for searching languages by iso code or name_
-
-[language_list usage rules](deps/language_list/usage-rules.md)
-<!-- language_list-end -->
 <!-- usage_rules-start -->
 ## usage_rules usage
-_A config-driven dev tool for Elixir projects to manage AGENTS.md files and agent skills from dependencies_
+_A dev tool for Elixir projects to gather LLM usage rules from dependencies_
 
 [usage_rules usage rules](deps/usage_rules/usage-rules.md)
 <!-- usage_rules-end -->
@@ -238,4 +220,10 @@ _A config-driven dev tool for Elixir projects to manage AGENTS.md files and agen
 ## usage_rules:otp usage
 [usage_rules:otp usage rules](deps/usage_rules/usage-rules/otp.md)
 <!-- usage_rules:otp-end -->
+<!-- sobelow-start -->
+## sobelow usage
+_Security-focused static analysis for Elixir & the Phoenix framework_
+
+[sobelow usage rules](deps/sobelow/usage-rules.md)
+<!-- sobelow-end -->
 <!-- usage-rules-end -->

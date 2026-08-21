@@ -79,7 +79,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "This repository has no Elixir application yet (no mix.exs at the root) \u2014 the Elixir rewrite is a proposal in docs/proposals/, not code. If a mix.exs now exists AND you edited any .ex, .exs, or .heex file, run `mix ci`. Otherwise respond with {\"ok\": true, \"reason\": \"No Elixir project, or no Elixir files edited\"}."
+            "prompt": "The Elixir application lives at the repository root (mix.exs). If you edited any .ex, .exs, or .heex file, or anything under config/, priv/repo/migrations/ or priv/resource_snapshots/, run `mix ci` and report its exit code \u2014 it is the canonical gate and CI runs the same alias. Migrations are generated with `mix ash.codegen --name <name>`, never hand-edited. The database is stock postgres:18-alpine on port 5434 (`docker compose up -d`). If you edited none of those, respond with {\"ok\": true, \"reason\": \"No Elixir files edited\"}."
           }
         ]
       }

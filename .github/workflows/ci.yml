@@ -108,6 +108,9 @@ jobs:
       MIX_ENV: test
     services:
       postgres:
+        # Must stay identical to docker-compose.yml. A local gate that runs a
+        # different server than CI is a gate that lies — an earlier divergence
+        # here passed locally and failed in CI on a missing extension.
         image: postgres:18-alpine
         env:
           POSTGRES_USER: postgres
@@ -151,6 +154,12 @@ jobs:
           restore-keys: |
             static-${{ env.MIX_ENV }}-${{ env.CACHE_VERSION }}-${{ github.head_ref || github.ref }}-
             static-${{ env.MIX_ENV }}-${{ env.CACHE_VERSION }}-refs/heads/master-
+
+      # The cache above is a speed-up, not a source. On a cache miss — the first
+      # run on a branch, or after a CACHE_VERSION bump — deps/ is empty and
+      # `mix ci` fails at "the dependency is not available". Fetching is cheap
+      # on a hit and mandatory on a miss.
+      - run: mix deps.get
 
       # Postgres is tuned before `mix ci` runs, since its final step creates and
       # migrates the database. Safe here because the container is ephemeral.

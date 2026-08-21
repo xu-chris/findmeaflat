@@ -76,13 +76,10 @@ connected account can see, installed or not.
   `docker-compose.yml`. Not 5433 — that collides with other projects' test
   databases on a shared developer machine. Credentials
   `postgres` / `postgres`. The base image's own cluster on 5432 is left alone.
-- **pgvector**, and **postgis best-effort**. Phase 1 uses neither. `vector` is
-  taken because it is free — the dev image already carries it — while `postgis`
-  is deferred to the slice that first needs it: no stock PG18 image ships both
-  (verified against `pgvector/pgvector:pg18` and `postgis/postgis:18-3.6`), so
-  requiring it now would force a custom database image for a Phase 3 feature.
-  If a package is unavailable the script logs it and continues, and the
-  SessionStart hook repeats the warning.
+- **No extension packages.** The schema enables `citext` only, which ships with
+  PostgreSQL. `vector` and `postgis` arrive with the slice that first needs one.
+  An extension costs the same to add whenever it is added, and adding one early
+  couples every environment — local, CI and cloud — to a capability nothing uses.
 - **UTF-8 encoding with an explicit `C.UTF-8` locale.** Without it `initdb`
   inherits the container's POSIX locale and lands on `SQL_ASCII`, which would
   corrupt exactly this project's primary data: German listing titles and street

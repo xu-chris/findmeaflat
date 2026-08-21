@@ -69,22 +69,6 @@ else
   notes+=("Elixir is NOT installed. The environment setup script did not complete. Setup log: $SETUP_LOG")
 fi
 
-# --- Extensions ------------------------------------------------------------
-# The first migration enables postgis and vector. If the packages never landed,
-# that migration fails with an error that reads like a code bug, so say it here
-# instead — at the top of the session, where it is cheap to act on.
-if command -v psql >/dev/null 2>&1 && pg_isready -q -p "$FINDMEAFLAT_PG_PORT" 2>/dev/null; then
-  missing=()
-  for ext in postgis vector; do
-    if ! su postgres -c "psql -p $FINDMEAFLAT_PG_PORT -tAc \"select 1 from pg_available_extensions where name = '$ext'\"" 2>/dev/null | grep -q 1; then
-      missing+=("$ext")
-    fi
-  done
-  if [ ${#missing[@]} -gt 0 ]; then
-    notes+=("Extensions unavailable: ${missing[*]}. \`CREATE EXTENSION\` in the first migration will fail — this is an environment gap, not a bug in the migration.")
-  fi
-fi
-
 # --- Degraded build --------------------------------------------------------
 if [ "$FINDMEAFLAT_SETUP_STATUS" != "ok" ]; then
   notes+=("Environment setup finished with status '$FINDMEAFLAT_SETUP_STATUS'. Read $SETUP_LOG before trusting the toolchain.")

@@ -461,9 +461,14 @@ Two constraints from `ash_ai`'s design worth knowing before modelling resources:
   descriptions is ever wanted, `:ash_oban` is the right strategy here — embedding
   generation must not sit in the crawl path.
 
-**Enable `postgis` and `vector` in the very first migration**, even though nothing uses
-them in Phase 1. Adding extensions to a live database later is a migration nobody
-enjoys, and both are on the roadmap.
+~~**Enable `postgis` and `vector` in the very first migration**, even though nothing uses
+them in Phase 1.~~ **Reversed — see `PLAN.md` S1.** The premise was that adding an
+extension later is painful. It is not: `CREATE EXTENSION` is one line whenever it runs.
+The real cost is that every environment's Postgres must ship the binaries, and that cost
+is identical whenever it is paid — so paying it early buys nothing and constrains
+hosting from day one. Keeping `vector` on a "it's free" argument produced a CI failure
+and a pgvector pin in three files within the hour. **`citext` only; each other extension
+arrives with the slice that needs it.**
 
 Deliberately boring. Oban owns scheduling and retries, so there is no per-search
 `GenServer` and no `DynamicSupervisor` for searches — state lives in Postgres where it

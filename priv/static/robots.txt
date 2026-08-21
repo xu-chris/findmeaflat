@@ -1,0 +1,10 @@
+# FindMeAFlat serves no public content.
+#
+# Users interact through Telegram; the only routes here are an unauthenticated
+# health check and, later, the Telegram webhook and an authenticated admin
+# surface. There is nothing here worth indexing, and anything a crawler did
+# reach would be operational surface rather than content.
+#
+# Disallow everything, for every agent, until that changes.
+User-agent: *
+Disallow: /

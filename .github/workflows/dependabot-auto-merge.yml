@@ -51,7 +51,7 @@ jobs:
       - name: Comment on major updates (potential breaking changes)
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
-          gh pr comment "$PR_URL" --body "🚨 **BREAKING CHANGE REVIEW REQUIRED** - This is a major version update that requires manual review. According to Conventional Commits v1.0.0, this will result in a `build!` commit indicating potential breaking changes in dependencies. Please review the changelog and test thoroughly before merging."
+          gh pr comment "$PR_URL" --body "🚨 **BREAKING CHANGE REVIEW REQUIRED** - This is a major version update that requires manual review. According to Conventional Commits v1.0.0, this will result in a \`build!\` commit indicating potential breaking changes in dependencies. Please review the changelog and test thoroughly before merging."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
