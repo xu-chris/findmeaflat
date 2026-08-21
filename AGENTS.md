@@ -25,8 +25,9 @@ proposal folder. Do not debug a portal without reading it first.
 
 - **The repo is public.** Nothing machine-local, path-bearing, or vendor-identifying
   gets committed. `.claude/settings.local.json` is gitignored for exactly this reason.
-- **There is no Elixir application yet.** Anything in the harness that runs `mix` is
-  dormant until `mix igniter.new` has been run. Do not invoke `mix` here.
+- **The Elixir application is at the repository root.** `mix ci` is the canonical gate
+  and CI runs the same alias. The database is stock `postgres:18-alpine` on **5434**
+  (`docker compose up -d`) — never 5432 or 5433, which other projects own on this machine.
 - **There is no `docs/craft/` rule set and no `docs/adr/`.** Skill references that would
   cite `ARC-001`, `CSS-001`, `WEB-001`, `TST-001` have no ids to cite yet; those
   reference files carry the rules directly instead.
@@ -86,8 +87,12 @@ constrains local, CI, cloud and hosting from that moment.
 
 - Read the proposal before proposing architecture; most questions are already answered
   there, with evidence.
-- Portal breakage is expected and recurring. Selectors belong in data, not code — that
-  is the point of `SelectorSet`.
+- Portal breakage is expected and recurring. **Selectors live as module attributes in
+  `FindMeAFlat.Portals.Adapter.*`, proved against committed HTML fixtures.**
+  `SelectorSet`-as-database-rows was cut — see `PLAN.md` correction 3.
+- **Never measure "does this selector still match?" with `grep`.** A substring count
+  answers a different question and has already reported a dead selector as 54 healthy
+  matches. Use `Floki.find/2` against a fixture.
 - Crawl politely. Six third-party sites, real rate limits, active bot detection.
 - Never commit `conf/config.json` — it holds a Telegram bot token.
 
