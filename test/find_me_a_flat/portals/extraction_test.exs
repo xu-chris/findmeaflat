@@ -38,6 +38,7 @@ defmodule FindMeAFlat.Portals.ExtractionTest do
       refute Enum.any?(extraction.cards, &is_nil(&1.external_id))
     end
 
+    @tag :capture_log
     test "costs only that card even when the adapter raises on it" do
       html = """
       <html><body><ul id="cards">
