@@ -83,6 +83,9 @@ defmodule FindMeAFlat.MixProject do
       # Security. exploit_guard is deliberately absent: one 2023 release, a runtime
       # dependency, and the wrong threat model (QUALITY-GATES.md §3).
       {:sobelow, "~> 0.15", only: [:dev, :test], runtime: false},
+      # Generates .claude/skills/build/references/backend/dependencies.md, the
+      # link index the `build` skill reads. See .agents/README.md.
+      {:usage_rules, "~> 0.1", only: [:dev], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
 
       # Migration safety. Ash generates the migrations, so nobody reviews them line
