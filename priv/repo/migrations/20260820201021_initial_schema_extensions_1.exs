@@ -120,7 +120,6 @@ defmodule FindMeAFlat.Repo.Migrations.InitialSchemaExtensions1 do
     """)
 
     execute("CREATE EXTENSION IF NOT EXISTS \"citext\"")
-    execute("CREATE EXTENSION IF NOT EXISTS \"vector\"")
   end
 
   def down do
@@ -131,6 +130,5 @@ defmodule FindMeAFlat.Repo.Migrations.InitialSchemaExtensions1 do
     )
 
     # execute("DROP EXTENSION IF EXISTS \"citext\"")
-    # execute("DROP EXTENSION IF EXISTS \"vector\"")
   end
 end

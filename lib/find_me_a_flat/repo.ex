@@ -4,11 +4,13 @@ defmodule FindMeAFlat.Repo do
 
   @impl true
   def installed_extensions do
-    # `citext` backs Ash's `:ci_string`. `vector` is enabled now because adding an
-    # extension to a live database later is a migration nobody enjoys; Phase 1 uses
-    # neither it nor `postgis`, and no stock PostgreSQL 18 image carries both, so
-    # `postgis` waits for the slice that first needs it (PLAN.md, S1).
-    ["ash-functions", "citext", "vector"]
+    # `citext` backs Ash's `:ci_string` and ships with stock PostgreSQL.
+    #
+    # No `vector`, no `postgis`. Enabling an extension is one line in a migration
+    # whenever it happens; the real cost is that every environment's Postgres has
+    # to ship the binaries, and that cost is the same whenever it is paid. Each
+    # arrives in the slice that first needs it, with a test that exercises it.
+    ["ash-functions", "citext"]
   end
 
   # Don't open unnecessary transactions

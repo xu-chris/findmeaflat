@@ -185,18 +185,29 @@ assertion that catches a health check wired to "the app is up" rather than "the 
 happened".
 **Green:** generators, five domains (`Reference` empty), extensions migration.
 
-**Extensions — corrected against reality.** The design said enable `postgis` *and*
-`vector` in the first migration. **No stock PostgreSQL 18 image ships both** — verified
-against `pgvector/pgvector:pg18` (vector, no postgis) and `postgis/postgis:18-3.6`
-(postgis, no vector) — so requiring both forces a custom database image on day one for
-capabilities Phase 1 never uses. `STACK.md` §4a already concludes the Phase 2 route is
-*"do not geocode — join on the address string"*, which needs neither. **Enable `vector`
-only** (free: the dev image carries it); `postgis` moves to the slice that first needs it.
-*This is the pragmatic review's objection, upheld by a verified fact.*
+**Extensions — neither, and the reasoning that got there is worth keeping.** The design
+said enable `postgis` *and* `vector` in the first migration, on the grounds that adding
+one to a live database later is painful. The pragmatic review disagreed: *"the actual
+cost is not the migration at all — it is that the Postgres server must ship the extension
+binaries."*
 
-**Local database:** `docker compose up -d` → PostgreSQL 18 on **5434**, user/password
-`postgres`. Not 5433: that port is commonly held by another project's test database on a
-developer machine, and pointing migrations at the wrong server is silent and expensive.
+That was accepted for `postgis` and, wrongly, not for `vector`, which was kept as
+"free, the dev image carries it". **It was not free.** Within the hour CI failed with
+`extension "vector" is not available`, and the fix pinned `pgvector/pgvector:pg18` into
+both `docker-compose.yml` and `ci.yml`, plus the cloud setup script — coupling every
+environment to an extension nothing uses, for a Phase 5 roadmap item that is not bet on
+and whose dependency (`ash_ai`) is not installed.
+
+**Enable `citext` only** — Ash's `:ci_string` uses it and it ships with stock Postgres.
+`vector` and `postgis` each arrive in the slice that first needs one, with a test that
+exercises it. Deferring costs nothing: `CREATE EXTENSION` is one line whenever it runs.
+
+**Local database:** `docker compose up -d` → stock `postgres:18-alpine` on **5434**,
+user/password `postgres`. Not 5433: that port is commonly held by another project's test
+database on a developer machine, and pointing migrations at the wrong server is silent
+and expensive.
+
+
 **Verify:** `mix ci`
 **Reads:** `STACK.md` §5, `.github/workflows/ci.yml`
 **Uncertainty:** `mix igniter.new` writes a subdirectory — generate to a temp dir and

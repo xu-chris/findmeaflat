@@ -201,18 +201,10 @@ install_postgres() {
   apt-get install -y -qq "postgresql-$PG_VERSION" >>"$LOG" 2>&1 \
     || { fail "apt-get install postgresql-$PG_VERSION"; return 1; }
 
-  # postgis and vector are enabled in the first migration even though Phase 1
-  # uses neither: adding an extension to a live database later is a migration
-  # nobody enjoys. Best-effort — a missing package must not fail setup, but the
-  # log has to say so, because the failure would otherwise surface as a
-  # confusing migration error weeks later.
-  for ext_pkg in "postgresql-$PG_VERSION-postgis-3" "postgresql-$PG_VERSION-pgvector"; do
-    if apt-get install -y -qq "$ext_pkg" >>"$LOG" 2>&1; then
-      log "installed $ext_pkg"
-    else
-      fail "$ext_pkg unavailable — the extension will not be creatable in migrations"
-    fi
-  done
+  # No extension packages. The schema enables `citext` only, which ships with
+  # PostgreSQL. `vector` and `postgis` arrive with the slice that first needs one;
+  # installing them ahead of that couples this environment to capabilities nothing
+  # uses, and an extension costs the same to add whenever it is added.
 
   # The package picks the first free port. Recreate the cluster so the port is
   # the one the project's configuration expects, not whatever was free.
