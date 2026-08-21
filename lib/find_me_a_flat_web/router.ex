@@ -23,6 +23,15 @@ defmodule FindMeAFlatWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Through no pipeline on purpose. `plug :accepts` would answer a probe that asks
+  # for `text/html` with a 406, and a health check that fails on content negotiation
+  # reports the prober's habits rather than the system's state. The controller sets
+  # the JSON content type itself. config/prod.exs exempts this path from force_ssl
+  # for the same reason: a load balancer on plain HTTP needs the answer, not a 301.
+  scope "/", FindMeAFlatWeb do
+    get "/healthz", HealthController, :show
+  end
+
   scope "/", FindMeAFlatWeb do
     pipe_through :browser
 
