@@ -66,10 +66,13 @@ config :find_me_a_flat, FindMeAFlatWeb.Endpoint,
 # portals, :deliver sends Telegram messages (concurrency 1, so a 429 snooze paces
 # the whole channel), :maintenance runs the cron pulse and housekeeping.
 #
-# There is deliberately no Oban.Plugins.Pruner here: `GET /healthz` decides it is
-# healthy by reading cron enqueues from the last two minutes, and the Pruner's
-# default `max_age` of 60 seconds would delete that evidence and make a healthy
-# system report 503.
+# The Pruner runs with a long retention rather than not at all. `GET /healthz`
+# reads cron enqueues from the last two minutes, and the Pruner's default
+# `max_age` of 60 seconds would delete that evidence and make a healthy system
+# report 503 — but omitting the plugin lets `oban_jobs` grow without bound, and
+# the minute pulse alone adds ~525,600 rows a year to a table the health check
+# queries on every probe. Seven days is far longer than the 120-second health
+# window and still bounds the table.
 config :find_me_a_flat, Oban,
   engine: Oban.Engines.Basic,
   notifier: Oban.Notifiers.Postgres,

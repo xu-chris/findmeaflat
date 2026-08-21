@@ -32,11 +32,11 @@ defmodule FindMeAFlatWeb.Router do
     get "/healthz", HealthController, :show
   end
 
-  scope "/", FindMeAFlatWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
-  end
+  # No public `GET /`. PLAN.md limits the unauthenticated surface to the health
+  # check and the eventual Telegram webhook: users reach this system through
+  # Telegram and never through a browser, so the generated Phoenix home page was
+  # public surface serving nobody. The :browser pipeline stays for the
+  # authenticated admin scope that S16 adds.
 
   # Other scopes may use custom stacks.
   # scope "/api", FindMeAFlatWeb do
