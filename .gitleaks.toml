@@ -28,6 +28,15 @@ paths = [
 
 regexTarget = "match"
 regexes = [
+  # Kleinanzeigen ships a search-only data-algolia-api-key to every visitor's
+  # browser. It is public by design and none of ours, and portal fixtures are
+  # committed byte-for-byte because that is their whole value.
+  #
+  # Matched by its own key name rather than by allowlisting the fixture directory:
+  # a path-level allowlist would suppress EVERY rule for those files, so a fixture
+  # later captured from an authenticated session could carry a real token straight
+  # into public history with both the history scan and the pre-publish gate silent.
+  '''data-algolia-api-key="[a-f0-9]{32}"''',
   # Placeholders from README/config examples.
   '''yourToken''',
   '''yourChatId''',
