@@ -1,0 +1,14 @@
+portal: kleinanzeigen
+derived_from: kleinanzeigen_2026_08_20.html
+refetch: no
+derivation: |
+  Every <li class="ad-listitem"> removed from #srchrslt-adtable, leaving the ul
+  itself and every other byte of the page untouched:
+
+      awk 'NR<6828 || NR>11689' kleinanzeigen_2026_08_20.html
+
+note: |
+  A genuinely narrow search returns a page like this one, and it must not be read
+  as "we cannot parse this portal". Derived rather than captured because no live
+  search we are allowed to run returns zero results on demand; deriving keeps every
+  byte of the real page's shell, which a hand-written stub would not.

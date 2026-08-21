@@ -1,0 +1,10 @@
+portal: kleinanzeigen
+url: https://www.kleinanzeigen.de/s-wohnung-mieten/berlin/c203l3331
+fetched_at: 2026-08-20
+http_status: 200
+refetch: yes
+note: |
+  The exact body CRAWL-DIAGNOSIS.md section 4 was written from: 33 .ad-listitem,
+  27 of them real .aditem cards, the other 6 empty advertising slots.
+  Captured verbatim, byte for byte. S14's drift job re-fetches the url above and
+  fails when the live page stops matching the selectors this fixture proves.

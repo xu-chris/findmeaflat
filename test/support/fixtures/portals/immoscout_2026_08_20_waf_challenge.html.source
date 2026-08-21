@@ -1,0 +1,13 @@
+portal: immoscout
+url: https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten?sorting=2
+fetched_at: 2026-08-20
+http_status: 401
+refetch: no
+note: |
+  A real AWS WAF Bot Control challenge page ("Ich bin kein Roboter"),
+  CRAWL-DIAGNOSIS.md section 2. Captured verbatim.
+
+  It is used here as a body that arrives where a results page was expected: a
+  challenge is not an empty result set, and telling them apart is the whole point
+  of the three page classes. immoscout itself is out of scope for Phase 1, so
+  refetch is no.

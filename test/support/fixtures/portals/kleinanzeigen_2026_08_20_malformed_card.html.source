@@ -1,0 +1,14 @@
+portal: kleinanzeigen
+derived_from: kleinanzeigen_2026_08_20.html
+refetch: no
+derivation: |
+  The data-adid attribute deleted from the first card only:
+
+      <article class="aditem" data-adid="3420563465" ...>
+      <article class="aditem" ...>
+
+  Nothing else differs. 27 card nodes, 26 of them with an id.
+note: |
+  Models a single card that came back broken. It must be counted as an error and
+  must not take the other 26 with it -- the failure that kept the predecessor
+  silent was one bad card aborting a whole batch.
