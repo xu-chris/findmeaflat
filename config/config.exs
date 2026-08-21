@@ -42,6 +42,18 @@ config :esbuild,
 # ex_gram's token lives under its own application key; set at runtime.
 config :ex_gram, token: nil
 
+# excellent_migrations gates every migration for dangerous operations. The
+# baseline schema is exempted by timestamp rather than by disabling checks:
+# Ash's generated extension migration necessarily executes raw SQL, and an
+# initial migration's `down` necessarily drops the table it created. Both are
+# correct here and both trip the detector.
+#
+# `start_after` keeps EVERY later migration fully checked, which is the point —
+# skipping the `raw_sql_executed` or `table_dropped` checks globally would hide
+# a genuinely destructive migration in S7 or beyond. Raise this only when a new
+# baseline is deliberately established and reviewed by hand.
+config :excellent_migrations, start_after: "20260821103140"
+
 # Configure the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -101,6 +113,10 @@ config :find_me_a_flat,
 # The two seams that are doubled in tests, named here so no later slice has to
 # invent a config key for them. `Fetching` (S3) and `Bot` (S5) own the modules;
 # S1 only declares which one is wired in.
+# The hooks in .git/hooks come from .agents/hooks/install-git-hooks.sh, which makes
+# each one cd to the checkout the commit actually happens in — git worktrees share
+# a hooks directory, and this library bakes an absolute path. Leave auto_install
+# off so `mix compile` cannot overwrite them.
 config :find_me_a_flat,
   portal_transport: FindMeAFlat.Fetching.Transport.Req,
   telegram_transport: FindMeAFlat.Bot.Transport.ExGram,
@@ -109,10 +125,6 @@ config :find_me_a_flat,
   # than a KeyError at boot.
   telegram_webhook_secret: nil
 
-# The hooks in .git/hooks come from .agents/hooks/install-git-hooks.sh, which makes
-# each one cd to the checkout the commit actually happens in — git worktrees share
-# a hooks directory, and this library bakes an absolute path. Leave auto_install
-# off so `mix compile` cannot overwrite them.
 if config_env() == :dev do
   config :git_hooks,
     auto_install: false,
