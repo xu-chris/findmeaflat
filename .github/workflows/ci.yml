@@ -108,7 +108,12 @@ jobs:
       MIX_ENV: test
     services:
       postgres:
-        image: postgres:18-alpine
+        # pgvector/pgvector:pg18, not postgres:18-alpine. The first migration
+        # enables the `vector` extension, and stock Postgres does not carry it —
+        # CI fails with 'extension "vector" is not available' while a developer
+        # machine running docker-compose passes, because compose uses this same
+        # image. Local and CI must run the same server or the gate lies.
+        image: pgvector/pgvector:pg18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
