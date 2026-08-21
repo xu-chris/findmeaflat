@@ -11,6 +11,26 @@ fixes none of them by itself — but the language choice determines how cheaply 
 
 ---
 
+> ## ⚠️ Correction (2026-08-21): the selector counts below were measured wrongly
+>
+> Every "does this selector still match?" figure in this document was produced by
+> **substring `grep -o`**, not by CSS selector matching. A substring count answers a
+> different question, and for two portals it gave the wrong answer.
+>
+> The worst case: `.aditem-main--middle--price` on kleinanzeigen was recorded as
+> **54 matches**. It matches **zero** elements. The 54 came from
+> `aditem-main--middle--price-shipping` and `…--price-shipping--price`, two live
+> classes that merely *begin* with the dead one — 27 cards × 2.
+>
+> **This is the same error that let the portals rot in the first place:** measuring
+> something adjacent to what you actually care about, and reading the healthy number
+> as proof. §8.5 argues for fixture contract tests precisely because a test that
+> parses the page cannot make this mistake.
+>
+> Re-verified with `Floki.find/2` against the captured 2026-08-20 fixtures. Corrected
+> per-portal numbers are inline below. immowelt and wg-gesucht were diagnosed
+> correctly; **kleinanzeigen and immosuchmaschine were not.**
+
 ## Summary table
 
 | Provider | HTTP | Root cause | Class | Fixable by rewrite alone? |
@@ -151,8 +171,8 @@ GET https://www.ebay-kleinanzeigen.de/s-wohnung-mieten/berlin/…  → 410 Gone
 GET https://www.kleinanzeigen.de/s-wohnung-mieten/berlin/c203l3331 → 200, 381 KB
 ```
 
-eBay divested the platform; it was renamed **kleinanzeigen.de**. On the new domain
-every selector in `lib/sources/kleinanzeigen.js` still matches:
+eBay divested the platform; it was renamed **kleinanzeigen.de**. On the new domain the domain rename is real, **but three selectors are dead** — the
+original substring counts here were wrong. CSS-verified against the fixture:
 
 ```
 srchrslt-adtable                  1
@@ -174,15 +194,20 @@ Including a real `@href` on `pagination-next`, so pagination works here.
 Page loads fine (200, 249 KB, `36.597 Immobilien in Berlin`). Selector audit:
 
 ```
-result-list      22   ✓
-data_price       64   ✓
-data_size        22   ✓
-data_zipcity     18   ✓
-data_rooms       18   ✓
-objectLink      151   ✓
-data-expose-id    0   ✗  ← the ID selector
-data-id          10       ← its replacement
+                                 substring   CSS   verdict
+.result-list li                         22    17   fewer containers than counted
+.data_title div[data-expose-id]          0     0   DEAD (correctly diagnosed)
+[data-id]                               10    10   its replacement
+.data_price span                        64    10   only 10 of 17 containers carry one
+.data_size dd                           22    10
+.data_rooms dd                          18     8
+.data_title div.objectLink             151     0   DEAD — missed by the substring count
 ```
+
+**Two dead selectors, not one.** The title selector is also gone; `objectLink`'s 151
+substring hits come from other markup entirely. The mismatched counts (17 containers,
+10 prices, 8 rooms) say the page drifted further than a single attribute rename, so
+S11 should expect to re-derive most of this set rather than patch one field.
 
 The ID field is the one that broke. Because `normalize` then runs
 `parseInt(undefined)` → `NaN`, every listing collides on the same ID and dedupe

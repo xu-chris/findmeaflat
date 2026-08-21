@@ -234,7 +234,11 @@ requirement: "nothing new", "genuinely no results" and "we cannot read this page
 three facts, and one integer cannot carry them.
 **Verify:** `mix test test/find_me_a_flat/portals/`
 **Reads:** `.references/lib/sources/kleinanzeigen.js`, `CURRENT-SYSTEM.md` §8
-**Uncertainty:** none — every kleinanzeigen selector was verified still matching.
+**Uncertainty:** ~~none — every kleinanzeigen selector was verified still matching.~~
+**That was false.** The verification was a substring `grep`, not a CSS match; three
+selectors were dead (container, price, size/rooms). See the correction at the top of
+`CRAWL-DIAGNOSIS.md`. Assume the same for any portal whose selectors were "verified"
+the same way — S11 especially.
 **Depends on:** S1
 **Why fill rate:** per-card isolation is a *silence generator* without it. When immowelt
 changes its price markup, 32 of 32 cards still parse, `price_cents` is nil on all 32, no
@@ -354,9 +358,13 @@ id/title/url/price; live probe green.
   `classified-card-mfe-<id>` prefix strip. **Carries the plan's biggest unknown**
   (below): record `url_strategy` as `:constructed` or `:pasted_only` from what is
   actually achievable.
-- **S11 immosuchmaschine** — `data-expose-id` → `data-id`, URL recovered by regex from the
-  `data-js` tracking string, and price parsing that does not throw on an unexpected
-  format (today `price.split('€ ')[1]` rejects the whole batch).
+- **S11 immosuchmaschine** — **more broken than first diagnosed.** CSS-verified: the
+  container matches 17 (not 22), `data-expose-id` is dead (→ `[data-id]`, 10), **and
+  `.data_title div.objectLink` is also dead** — missed because its 151 substring hits
+  come from unrelated markup. Price 10, size 10, rooms 8 against 17 containers, so the
+  page drifted further than one rename. **Expect to re-derive the whole selector set,
+  not patch one field.** Still needs the `data-js` regex URL recovery and price parsing
+  that does not reject the batch on one odd format.
 - **S12 wg_gesucht** — full redesign: `.wgg_card.offer_list_item`,
   `id="liste-details-ad-<id>"`, plus the 22-parameter URL builder for both flat types.
   The only adapter whose `search_url/1` does real work — which is why the callback exists.
