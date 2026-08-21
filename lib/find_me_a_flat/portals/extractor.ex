@@ -32,7 +32,9 @@ defmodule FindMeAFlat.Portals.Extractor do
   def extract(html, adapter) when is_binary(html) do
     with {:ok, document} <- parse_document(html),
          :ok <- recognise(document, adapter) do
-      document |> Floki.find(adapter.card_selector()) |> read_cards(adapter)
+      document
+      |> Floki.find(adapter.card_selector())
+      |> read_cards(adapter, document)
     end
   end
 
@@ -51,9 +53,20 @@ defmodule FindMeAFlat.Portals.Extractor do
     end
   end
 
-  defp read_cards([], _adapter), do: {:ok, :no_results}
+  # Zero cards is ambiguous: a genuinely empty search and a renamed card container
+  # look identical here. Only the page saying so resolves it, so an adapter with no
+  # empty-state marker gets `:unrecognisable` — the loud answer. Reporting
+  # `:no_results` on an unproved guess is precisely the silence this rewrite exists
+  # to remove.
+  defp read_cards([], adapter, document) do
+    if Enum.any?(adapter.empty_markers(), &(Floki.find(document, &1) != [])) do
+      {:ok, :no_results}
+    else
+      {:error, :unrecognisable}
+    end
+  end
 
-  defp read_cards(nodes, adapter) do
+  defp read_cards(nodes, adapter, _document) do
     {read, failed} =
       nodes
       |> Enum.map(&read_card(&1, adapter))

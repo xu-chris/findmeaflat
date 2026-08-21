@@ -3,6 +3,7 @@ defmodule FindMeAFlat.Portals.Adapter.KleinanzeigenTest do
 
   alias FindMeAFlat.PortalFixture
   alias FindMeAFlat.Portals
+  alias FindMeAFlat.Portals.Adapter.Kleinanzeigen
 
   @fixture "kleinanzeigen_2026_08_20.html"
 
@@ -63,6 +64,37 @@ defmodule FindMeAFlat.Portals.Adapter.KleinanzeigenTest do
       # Printed as "990 € VB" -- Verhandlungsbasis. The predecessor's
       # immosuchmaschine parser rejected the whole batch over a price suffix.
       assert card.price_cents == 99_000
+    end
+  end
+
+  describe "price_cents/1 across real German rent formats" do
+    # Regression. The grouped alternative used `*`, so it matched the leading three
+    # digits of an UNGROUPED amount and — alternation being leftmost-first — never
+    # reached `\d+`. "1250 EUR" became 125 EUR and "12500 EUR" became 125 EUR:
+    # a tenfold and hundredfold understatement, silent, and invisible to fill rate
+    # because the field was still populated. Ungrouped four-digit rents are common
+    # on this portal, so this was not an edge case.
+    for {text, expected} <- [
+          {"1.250 €", 125_000},
+          {"1250 €", 125_000},
+          {"12500 €", 1_250_000},
+          {"12.500 €", 1_250_000},
+          {"990 EUR VB", 99_000},
+          {"850 €", 85_000},
+          {"1.234,56 EUR", 123_456},
+          {"1234,56 €", 123_456}
+        ] do
+      test "#{text} is #{expected} cents" do
+        card =
+          Floki.parse_fragment!(
+            ~s(<article class="aditem" data-adid="1">) <>
+              ~s(<div class="aditem-main"><div class="text-module-begin"><a href="/x">t</a></div>) <>
+              ~s(<div class="aditem-main--middle--price-shipping--price">#{unquote(text)}</div>) <>
+              ~s(</div></article>)
+          )
+
+        assert %{price_cents: unquote(expected)} = Kleinanzeigen.extract_card(card)
+      end
     end
   end
 end

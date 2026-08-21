@@ -30,6 +30,21 @@ defmodule FindMeAFlat.Portals.Adapter do
   @callback card_selector() :: String.t()
 
   @doc """
+  Selectors that positively prove a page is an *empty* result set.
+
+  Zero cards is not evidence of emptiness. A portal that keeps its page shell and
+  renames the card container yields zero cards on a perfectly healthy 200 — and if
+  that returned `:no_results`, portal health could never tell a silent breakage
+  from a narrow search. So emptiness must be asserted by the page, not inferred
+  from the absence of cards.
+
+  An adapter that cannot yet identify its portal's empty state returns `[]`, which
+  makes zero cards `{:error, :unrecognisable}` — loud and wrong-in-the-safe-direction,
+  rather than quiet and wrong-in-the-dangerous-one.
+  """
+  @callback empty_markers() :: [String.t()]
+
+  @doc """
   Reads one advertisement node into `FindMeAFlat.Portals.Card` fields.
 
   Return what the node carried and `nil` for what it did not. Raising is allowed

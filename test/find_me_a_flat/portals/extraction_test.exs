@@ -3,6 +3,8 @@ defmodule FindMeAFlat.Portals.ExtractionTest do
 
   alias FindMeAFlat.PortalFixture
   alias FindMeAFlat.Portals
+  alias FindMeAFlat.Portals.Adapter.Emptyable
+  alias FindMeAFlat.Portals.Extractor
 
   describe "the three page classes" do
     test "a results page holding advertisements returns the cards it found" do
@@ -14,10 +16,28 @@ defmodule FindMeAFlat.Portals.ExtractionTest do
       assert length(extraction.cards) == 27
     end
 
-    test "a valid results page holding none is :no_results, not an empty batch" do
+    test "zero cards without a proved empty state is :unrecognisable, not :no_results" do
+      # This fixture is derived: card nodes deleted, page metadata left claiming
+      # thousands of results. That is indistinguishable from a portal renaming its
+      # card container — which is the point. Absent a real empty-state marker the
+      # only safe answer is the loud one, because a false ":no_results" costs every
+      # listing until somebody notices, while a false ":unrecognisable" costs one
+      # alert.
       html = PortalFixture.read!("kleinanzeigen_2026_08_20_no_results.html")
 
-      assert {:ok, :no_results} = Portals.parse("kleinanzeigen", html)
+      assert {:error, :unrecognisable} = Portals.parse("kleinanzeigen", html)
+    end
+
+    test "zero cards WITH a proved empty state is :no_results" do
+      # Proves the branch exists and is reachable, using a test adapter that does
+      # declare an empty marker. A real kleinanzeigen empty page has not been
+      # captured; when one is, its marker goes in the adapter and this becomes a
+      # fixture test.
+      html = ~s(<html><body id="srchrslt"><div id="srchrslt-adtable"></div>
+               <div class="no-results-here">Keine Anzeigen gefunden</div></body></html>)
+
+      assert {:ok, :no_results} =
+               Extractor.extract(html, Emptyable)
     end
 
     test "a bot-challenge body is unrecognisable, not an empty result set" do

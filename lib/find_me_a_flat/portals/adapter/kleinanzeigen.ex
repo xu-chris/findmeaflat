@@ -37,7 +37,13 @@ defmodule FindMeAFlat.Portals.Adapter.Kleinanzeigen do
 
   # "2.585 EUR", "990 EUR VB", "1.234,56 EUR": German thousands dots, an optional
   # decimal comma, and any suffix the seller felt like adding.
-  @price ~r/(?<euros>\d{1,3}(?:\.\d{3})*|\d+)(?:,(?<cents>\d{1,2}))?/
+  #
+  # The grouped branch requires at least one `.NNN` group. With `*` it matched the
+  # leading three digits of an UNGROUPED amount and, alternation being
+  # leftmost-first, never tried `\d+` — so "1250 EUR" parsed as 125 EUR and
+  # "12500 EUR" as 125 EUR. Silent, and invisible to fill rate because the field
+  # was still populated. Ungrouped four-digit rents are common on this portal.
+  @price ~r/(?<euros>\d{1,3}(?:\.\d{3})+|\d+)(?:,(?<cents>\d{1,2}))?/
   @size ~r/(?<number>[\d.,]+)\s*m²/u
   @rooms ~r/(?<number>[\d.,]+)\s*Zi\./u
 
@@ -46,6 +52,17 @@ defmodule FindMeAFlat.Portals.Adapter.Kleinanzeigen do
 
   @impl true
   def card_selector, do: @card_selector
+
+  # Empty deliberately. No genuine zero-result page has been captured from this
+  # portal, and the derived no-results fixture is not one — it has card nodes
+  # deleted while the page still reports thousands of results, so it proves
+  # nothing about the real empty state.
+  #
+  # Until a real one is captured, zero cards means `{:error, :unrecognisable}`:
+  # a false "the portal broke" costs one alert, a false "no results" costs every
+  # listing until somebody notices.
+  @impl true
+  def empty_markers, do: []
 
   @impl true
   def extract_card(card) do

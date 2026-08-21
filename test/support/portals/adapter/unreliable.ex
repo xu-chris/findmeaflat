@@ -18,6 +18,9 @@ defmodule FindMeAFlat.Portals.Adapter.Unreliable do
   def card_selector, do: "#cards .card"
 
   @impl true
+  def empty_markers, do: []
+
+  @impl true
   def extract_card(card) do
     id = card |> Floki.attribute("data-id") |> List.first()
     number = String.to_integer(id)
